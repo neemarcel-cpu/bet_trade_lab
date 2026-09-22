@@ -6,10 +6,10 @@ import os
 import plotly.graph_objects as go
 
 # =========================================================================
-# 1. CONFIGURAÇÃO DA PÁGINA & CSS: DARK THEME COM BARRA LATERAL À DIREITA
+# 1. CONFIGURAÇÃO DA PÁGINA & CSS DARK FINTECH COM ELEMENTOS DE ALTO CONTRASTE
 # =========================================================================
 st.set_page_config(
-    page_title="AlphaBet | Terminal & VIP Intelligence",
+    page_title="AlphaBet | Terminal Quantitativo & VIP Intelligence",
     page_icon="⚡",
     layout="wide",
     initial_sidebar_state="expanded"
@@ -44,20 +44,92 @@ st.markdown("""
         font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     }
 
-    /* Correção do Contraste de Labels e Legendas */
+    /* Legendas e Títulos dos Campos em Branco Nítido */
     label[data-testid="stWidgetLabel"] p,
     .stSelectbox label p,
     .stNumberInput label p,
     .stSlider label p,
-    .stTextInput label p,
-    .stRadio label p {
-        color: #f1f5f9 !important;
+    .stTextInput label p {
+        color: #f8fafc !important;
         font-size: 0.92rem !important;
         font-weight: 600 !important;
         letter-spacing: 0.3px;
     }
 
-    /* Texto interno dos Selectboxes e Inputs */
+    /* =========================================================
+       FORMULÁRIO VIP: CAIXAS BRANCAS COM TEXTO ESCURO
+       ========================================================= */
+    div[data-testid="stForm"] div[data-baseweb="base-input"] {
+        background-color: #ffffff !important;
+        border: 2px solid #cbd5e1 !important;
+        border-radius: 8px !important;
+    }
+    div[data-testid="stForm"] input {
+        background-color: #ffffff !important;
+        color: #0f172a !important;
+        font-size: 0.95rem !important;
+        font-weight: 600 !important;
+        padding: 8px 12px !important;
+    }
+    div[data-testid="stForm"] input::placeholder {
+        color: #64748b !important;
+        font-weight: 400 !important;
+    }
+
+    /* BOTÃO DO FORMULÁRIO VIP: FUNDO BRANCO COM FONTE ESCURA */
+    div[data-testid="stForm"] div.stButton > button {
+        background: #ffffff !important;
+        color: #0f172a !important;
+        border: 2px solid #f59e0b !important;
+        font-size: 1rem !important;
+        font-weight: 800 !important;
+        border-radius: 8px !important;
+        padding: 12px 24px !important;
+        box-shadow: 0 4px 14px rgba(245, 158, 11, 0.35) !important;
+        transition: all 0.2s ease !important;
+        width: 100% !important;
+    }
+    div[data-testid="stForm"] div.stButton > button p {
+        color: #0f172a !important;
+        font-weight: 800 !important;
+    }
+    div[data-testid="stForm"] div.stButton > button:hover {
+        background: #f8fafc !important;
+        border-color: #d97706 !important;
+        transform: translateY(-2px) !important;
+        box-shadow: 0 6px 20px rgba(245, 158, 11, 0.5) !important;
+    }
+
+    /* =========================================================
+       BOTÕES DE NAVEGAÇÃO DA BARRA LATERAL (ALTO CONTRASTE)
+       ========================================================= */
+    section[data-testid="stSidebar"] div.stButton > button {
+        background-color: #1e293b !important;
+        color: #f8fafc !important;
+        border: 1px solid #334155 !important;
+        border-radius: 8px !important;
+        padding: 10px 14px !important;
+        width: 100% !important;
+        font-weight: 600 !important;
+        text-align: left !important;
+        justify-content: flex-start !important;
+        margin-bottom: 6px !important;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2) !important;
+        transition: all 0.2s ease !important;
+    }
+    section[data-testid="stSidebar"] div.stButton > button:hover {
+        background-color: #3b82f6 !important;
+        color: #ffffff !important;
+        border-color: #60a5fa !important;
+        transform: translateX(-3px) !important;
+    }
+    section[data-testid="stSidebar"] div.stButton > button p {
+        color: inherit !important;
+        font-weight: 600 !important;
+        font-size: 0.92rem !important;
+    }
+
+    /* Outros Selectboxes fora do form */
     div[data-baseweb="select"] > div {
         background-color: #141923 !important;
         border: 1px solid #232b3e !important;
@@ -67,22 +139,25 @@ st.markdown("""
     div[data-baseweb="select"] span {
         color: #f8fafc !important;
     }
-    div[data-baseweb="base-input"] {
-        background-color: #141923 !important;
-        border: 1px solid #232b3e !important;
-        border-radius: 8px !important;
-    }
-    input {
-        color: #f8fafc !important;
-    }
 
-    /* Títulos */
-    h1, h2, h3, h4 {
-        color: #f8fafc !important;
+    /* Botão de Execução do Backtest no Painel Principal */
+    .main div.stButton > button {
+        background: linear-gradient(135deg, #1d4ed8, #2563eb) !important;
+        color: #ffffff !important;
+        font-size: 0.95rem !important;
+        font-weight: 700 !important;
+        letter-spacing: 0.4px !important;
+        border-radius: 8px !important;
+        border: 1px solid #3b82f6 !important;
+        padding: 10px 24px !important;
+        box-shadow: 0 4px 14px rgba(37, 99, 235, 0.4) !important;
+    }
+    .main div.stButton > button p {
+        color: #ffffff !important;
         font-weight: 700 !important;
     }
 
-    /* Cards Métricos */
+    /* Cards Métricos e de Jogo */
     .metric-card {
         background: #141923;
         border: 1px solid #232b3e;
@@ -106,31 +181,6 @@ st.markdown("""
     .metric-negative { color: #ef4444 !important; }
     .metric-accent { color: #38bdf8 !important; }
 
-    /* Botão Principal de Ação - Alto Contraste */
-    div.stButton > button {
-        background: linear-gradient(135deg, #1d4ed8, #2563eb) !important;
-        color: #ffffff !important;
-        font-size: 0.95rem !important;
-        font-weight: 700 !important;
-        letter-spacing: 0.4px !important;
-        border-radius: 8px !important;
-        border: 1px solid #3b82f6 !important;
-        padding: 10px 24px !important;
-        box-shadow: 0 4px 14px rgba(37, 99, 235, 0.4) !important;
-        transition: all 0.2s ease !important;
-    }
-    div.stButton > button:hover {
-        background: linear-gradient(135deg, #2563eb, #3b82f6) !important;
-        color: #ffffff !important;
-        box-shadow: 0 6px 20px rgba(59, 130, 246, 0.6) !important;
-        transform: translateY(-1px);
-    }
-    div.stButton > button p {
-        color: #ffffff !important;
-        font-weight: 700 !important;
-    }
-
-    /* Cards de Partidas */
     .match-card {
         background: #141923;
         border: 1px solid #232b3e;
@@ -148,7 +198,6 @@ st.markdown("""
         border-radius: 12px;
         font-size: 0.75rem;
         font-weight: 700;
-        animation: blinker 1.5s linear infinite;
     }
     .vip-badge {
         background: linear-gradient(135deg, #f59e0b, #d97706);
@@ -157,7 +206,6 @@ st.markdown("""
         border-radius: 12px;
         font-size: 0.75rem;
         font-weight: 800;
-        letter-spacing: 0.5px;
     }
     .scheduled-badge {
         background: #1e293b;
@@ -168,11 +216,7 @@ st.markdown("""
         font-weight: 600;
         border: 1px solid #0284c7;
     }
-    @keyframes blinker {
-        50% { opacity: 0.3; }
-    }
 
-    /* Caixa de Bloqueio VIP */
     .vip-gate-box {
         background: linear-gradient(180deg, #141923 0%, #0d121c 100%);
         border: 1px solid #f59e0b;
@@ -185,7 +229,7 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-# Cabeçalho Principal
+# Cabeçalho Principal Estilo FinTech
 st.markdown("""
 <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #232b3e; padding-bottom: 14px; margin-bottom: 24px;">
     <div>
@@ -193,42 +237,55 @@ st.markdown("""
             <span>⚡ ALPHABET</span> 
             <span style="font-size: 0.8rem; background: #1e293b; color: #38bdf8; padding: 4px 10px; border-radius: 20px; border: 1px solid #38bdf8;">TERMINAL QUANT</span>
         </h1>
-        <p style="margin: 4px 0 0 0; color: #94a3b8; font-size: 0.9rem;">Ecossistema Integrado de Inteligência Pré-Jogo, In-Play e Backtest Avançado</p>
+        <p style="margin: 4px 0 0 0; color: #94a3b8; font-size: 0.9rem;">Ecossistema de Inteligência Pré-Jogo, Radar In-Play e Backtest de 5 Anos</p>
     </div>
     <div style="text-align: right;">
-        <span style="font-size: 0.8rem; color: #10b981; font-weight: 600;">● SISTEMA ATIVO</span><br>
+        <span style="font-size: 0.8rem; color: #10b981; font-weight: 600;">● SISTEMA CONECTADO</span><br>
         <span style="font-size: 0.75rem; color: #64748b;">Feeds: Football-Data & API-Sports</span>
     </div>
 </div>
 """, unsafe_allow_html=True)
 
-# Captura de API Key
+# Captura segura da chave de API
 api_key = st.secrets.get("API_FOOTBALL_KEY", "")
 
-# Controle de Sessão de Assinante / Lead
+# Inicialização dos estados na sessão
 if "lead_desbloqueado" not in st.session_state:
     st.session_state.lead_desbloqueado = False
 
+if "modulo_atual" not in st.session_state:
+    st.session_state.modulo_atual = "👑 Análises VIP (Pré-Jogo)"
+
 # =========================================================================
-# BARRA LATERAL À DIREITA: NAVEGAÇÃO ENTRE AS ÁREAS DO SITE
+# BARRA LATERAL À DIREITA COM BOTÕES DE SELEÇÃO EXCLUSIVOS
 # =========================================================================
 with st.sidebar:
-    st.markdown("<h3 style='font-size:1.15rem; color:#f8fafc; border-bottom: 1px solid #232b3e; padding-bottom: 8px;'>📌 Módulos do Sistema</h3>", unsafe_allow_html=True)
+    st.markdown("<h3 style='font-size:1.15rem; color:#f8fafc; border-bottom: 1px solid #232b3e; padding-bottom: 8px;'>📌 Navegação de Áreas</h3>", unsafe_allow_html=True)
+    st.caption("Selecione o ambiente desejado:")
+
+    # Lista de áreas do app em botões individuais com fontes contrastantes
+    if st.button("👑 Análises VIP (Pré-Jogo)"):
+        st.session_state.modulo_atual = "👑 Análises VIP (Pré-Jogo)"
     
-    modulo_selecionado = st.radio(
-        "Selecione o Ambiente:",
-        [
-            "👑 Análises VIP (Pré-Jogo)",
-            "🧪 Backtest Histórico (Área VIP)",
-            "🔴 Radar In-Play (Ao Vivo)",
-            "📅 Agenda (Próximos Jogos)",
-            "🧮 Calculadora de Valor (+EV)"
-        ]
-    )
+    if st.button("🧪 Backtest Histórico (Área VIP)"):
+        st.session_state.modulo_atual = "🧪 Backtest Histórico (Área VIP)"
+
+    if st.button("🔴 Radar In-Play (Ao Vivo)"):
+        st.session_state.modulo_atual = "🔴 Radar In-Play (Ao Vivo)"
+
+    if st.button("📅 Agenda (Próximos Jogos)"):
+        st.session_state.modulo_atual = "📅 Agenda (Próximos Jogos)"
+
+    if st.button("🧮 Calculadora de Valor (+EV)"):
+        st.session_state.modulo_atual = "🧮 Calculadora de Valor (+EV)"
 
     st.markdown("---")
+    st.markdown("<div style='color:#94a3b8; font-size:0.8rem;'>Área ativa no momento:</div>", unsafe_allow_html=True)
+    st.markdown(f"<div style='color:#38bdf8; font-weight:700; font-size:0.95rem;'>{st.session_state.modulo_atual}</div>", unsafe_allow_html=True)
+    
+    st.write("")
     if st.session_state.lead_desbloqueado:
-        st.markdown(f"""
+        st.markdown("""
         <div style="background:#064e3b; border:1px solid #10b981; border-radius:8px; padding:10px; text-align:center;">
             <span style="color:#10b981; font-weight:700; font-size:0.85rem;">STATUS: ASSINANTE VIP</span><br>
             <span style="color:#d1fae5; font-size:0.75rem;">Acesso Completo Liberado</span>
@@ -242,29 +299,29 @@ with st.sidebar:
         </div>
         """, unsafe_allow_html=True)
 
-# Função Auxiliar para renderizar a Barreira de Cadastro (Paywall de Leads)
+# Função Auxiliar: Renderiza o formulário VIP de cadastro (caixas brancas com texto escuro)
 def renderizar_barreira_lead(titulo_area):
     st.markdown(f"""
     <div class="vip-gate-box">
         <span class="vip-badge">ÁREA EXCLUSIVA DE ASSINANTES</span>
         <h2 style="margin: 12px 0 6px 0; color: #f8fafc; font-size: 1.5rem;">{titulo_area}</h2>
         <p style="color: #94a3b8; max-width: 650px; margin: 0 auto 16px auto; font-size: 0.95rem;">
-            Desbloqueie acesso imediato ao <b>Simulador de 5 Anos</b>, modelos de <b>Gols Esperados (xG)</b>, 
-            e projeções matemáticas exclusivas preenchendo seus dados abaixo:
+            Desbloqueie acesso imediato ao <b>Simulador de 5 Anos de Backtest</b>, modelos de <b>xG</b>, 
+            e projeções quantitativas preenchendo seus dados abaixo:
         </p>
-        <p style="color: #f59e0b; font-weight: 600; font-size: 0.9rem;">
+        <p style="color: #f59e0b; font-weight: 700; font-size: 0.92rem;">
             🔓 Acesso 100% gratuito por tempo limitado:
         </p>
     </div>
     """, unsafe_allow_html=True)
 
-    col_form_center, _ = st.columns([2, 1])
-    with col_form_center:
+    col_center, _ = st.columns([2, 1])
+    with col_center:
         with st.form("form_captura_lead"):
-            st.markdown("<h4 style='font-size:1.05rem; color:#f8fafc;'>Cadastre-se para Acesso Imediato</h4>", unsafe_allow_html=True)
-            nome_cliente = st.text_input("Nome Completo", placeholder="Ex: Roberto Carlos")
-            email_cliente = st.text_input("E-mail Principal", placeholder="Ex: roberto@email.com")
-            whatsapp_cliente = st.text_input("WhatsApp com DDD", placeholder="Ex: (11) 99999-8888")
+            st.markdown("<h4 style='font-size:1.1rem; color:#f8fafc; margin-bottom:12px;'>Ficha de Cadastro VIP</h4>", unsafe_allow_html=True)
+            nome_cliente = st.text_input("Nome Completo", placeholder="Digite seu nome completo...")
+            email_cliente = st.text_input("E-mail Principal", placeholder="seuemail@provedor.com")
+            whatsapp_cliente = st.text_input("WhatsApp com DDD", placeholder="(11) 99999-8888")
             
             enviar_lead = st.form_submit_button("🚀 Liberar Acesso VIP Agora")
 
@@ -287,12 +344,12 @@ def renderizar_barreira_lead(titulo_area):
                     st.session_state.nome_usuario = nome_cliente
                     st.rerun()
                 else:
-                    st.error("Por favor, preencha todos os campos corretamente para liberar o acesso.")
+                    st.error("Por favor, preencha todos os campos para liberar seu acesso.")
 
 # =========================================================================
 # MÓDULO 1: ANÁLISES VIP (PRÉ-JOGO)
 # =========================================================================
-if modulo_selecionado == "👑 Análises VIP (Pré-Jogo)":
+if st.session_state.modulo_atual == "👑 Análises VIP (Pré-Jogo)":
     if not st.session_state.lead_desbloqueado:
         renderizar_barreira_lead("Inteligência e Projeções Pré-Jogo VIP")
     else:
@@ -342,8 +399,7 @@ if modulo_selecionado == "👑 Análises VIP (Pré-Jogo)":
             }
         ]
 
-        df_vip = pd.DataFrame(dados_analises_vip)
-        for _, item in df_vip.iterrows():
+        for item in dados_analises_vip:
             st.markdown(f"""
             <div class="match-card" style="border-left: 4px solid #f59e0b;">
                 <div>
@@ -366,7 +422,7 @@ if modulo_selecionado == "👑 Análises VIP (Pré-Jogo)":
 # =========================================================================
 # MÓDULO 2: BACKTEST HISTÓRICO (ÁREA VIP EXCLUSIVA)
 # =========================================================================
-elif modulo_selecionado == "🧪 Backtest Histórico (Área VIP)":
+elif st.session_state.modulo_atual == "🧪 Backtest Histórico (Área VIP)":
     if not st.session_state.lead_desbloqueado:
         renderizar_barreira_lead("Simulador Quantitativo de 5 Anos de Backtest")
     else:
@@ -409,7 +465,7 @@ elif modulo_selecionado == "🧪 Backtest Histórico (Área VIP)":
         ]
 
         st.write("")
-        # BOTÃO COM LEGENDA EM ALTO CONTRASTE
+        # BOTÃO DO BACKTEST COM FONTE BRILHANTE EM ALTO CONTRASTE
         if st.button("🚀 Executar Simulação Histórica (5 Anos)"):
             barra_progresso = st.progress(0)
             lista_dataframes = []
@@ -572,7 +628,7 @@ elif modulo_selecionado == "🧪 Backtest Histórico (Área VIP)":
 # =========================================================================
 # MÓDULO 3: RADAR IN-PLAY (AO VIVO)
 # =========================================================================
-elif modulo_selecionado == "🔴 Radar In-Play (Ao Vivo)":
+elif st.session_state.modulo_atual == "🔴 Radar In-Play (Ao Vivo)":
     st.markdown("<h3 style='color:#f8fafc; font-size:1.3rem;'>🔴 Radar In-Play (Jogos em Tempo Real)</h3>", unsafe_allow_html=True)
     st.caption("Partidas com bola rolando no mundo via API-Football.")
 
@@ -618,7 +674,7 @@ elif modulo_selecionado == "🔴 Radar In-Play (Ao Vivo)":
 # =========================================================================
 # MÓDULO 4: AGENDA (PRÓXIMOS JOGOS DE HOJE)
 # =========================================================================
-elif modulo_selecionado == "📅 Agenda (Próximos Jogos)":
+elif st.session_state.modulo_atual == "📅 Agenda (Próximos Jogos)":
     st.markdown("<h3 style='color:#f8fafc; font-size:1.3rem;'>📅 Agenda de Jogos do Dia</h3>", unsafe_allow_html=True)
     st.caption("Grade de partidas programadas para as próximas horas.")
 
@@ -663,7 +719,7 @@ elif modulo_selecionado == "📅 Agenda (Próximos Jogos)":
 # =========================================================================
 # MÓDULO 5: CALCULADORA DE VALOR (+EV) & CRITÉRIO DE KELLY
 # =========================================================================
-elif modulo_selecionado == "🧮 Calculadora de Valor (+EV)":
+elif st.session_state.modulo_atual == "🧮 Calculadora de Valor (+EV)":
     st.markdown("<h3 style='color:#f8fafc; font-size:1.3rem;'>🧮 Precificação Precisa & Gestão de Risco</h3>", unsafe_allow_html=True)
     c_in1, c_in2 = st.columns(2)
 

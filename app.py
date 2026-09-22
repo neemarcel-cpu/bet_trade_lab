@@ -6,10 +6,10 @@ import os
 import plotly.graph_objects as go
 
 # =========================================================================
-# 1. CONFIGURAÇÃO DA PÁGINA & CSS DARK FINTECH COM ELEMENTOS DE ALTO CONTRASTE
+# 1. CONFIGURAÇÃO DA PÁGINA & CSS: DESIGN SYSTEM INSPIRADO EM CSCORE & TERMINAIS QUANT
 # =========================================================================
 st.set_page_config(
-    page_title="AlphaBet | Quant Terminal & Live Odds Scanner",
+    page_title="AlphaBet | Quant I.A. & Live Terminal",
     page_icon="⚡",
     layout="wide",
     initial_sidebar_state="expanded"
@@ -20,18 +20,17 @@ st.markdown("""
     /* Inversão da barra lateral para o lado DIREITO da tela */
     section[data-testid="stSidebar"] {
         order: 2 !important;
-        border-left: 1px solid #232b3e !important;
+        border-left: 1px solid #1e293b !important;
         border-right: none !important;
-        background-color: #10141d !important;
+        background: linear-gradient(180deg, #0d121c 0%, #080c14 100%) !important;
     }
     div[data-testid="stSidebarCollapseButton"] {
         order: 2 !important;
     }
     .main .block-container {
         order: 1 !important;
-    }
-    div.stApp > header {
-        display: block;
+        padding-top: 2rem !important;
+        padding-bottom: 3rem !important;
     }
     div.stApp > div:first-child {
         flex-direction: row-reverse !important;
@@ -39,24 +38,141 @@ st.markdown("""
 
     /* Fundo da Aplicação */
     .stApp {
-        background-color: #0b0e14;
+        background-color: #07090e;
         color: #e2e8f0;
         font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     }
 
-    /* Legendas e Títulos dos Campos em Branco Nítido */
+    /* Legendas e Títulos de Inputs em Branco Nítido */
     label[data-testid="stWidgetLabel"] p,
     .stSelectbox label p,
     .stNumberInput label p,
     .stSlider label p,
     .stTextInput label p {
-        color: #f8fafc !important;
-        font-size: 0.92rem !important;
+        color: #f1f5f9 !important;
+        font-size: 0.90rem !important;
         font-weight: 600 !important;
         letter-spacing: 0.3px;
     }
 
-    /* FORMULÁRIO VIP: CAIXAS BRANCAS COM TEXTO ESCURO */
+    /* =========================================================
+       BOTÕES DA BARRA LATERAL RIGOROSAMENTE SIMÉTRICOS
+       ========================================================= */
+    section[data-testid="stSidebar"] div.stButton {
+        width: 100% !important;
+        margin-bottom: 8px !important;
+    }
+    section[data-testid="stSidebar"] div.stButton > button {
+        width: 100% !important;
+        height: 48px !important;
+        min-height: 48px !important;
+        background-color: #111827 !important;
+        color: #cbd5e1 !important;
+        border: 1px solid #1f2937 !important;
+        border-radius: 8px !important;
+        padding: 0 16px !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: flex-start !important;
+        text-align: left !important;
+        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2) !important;
+    }
+    section[data-testid="stSidebar"] div.stButton > button:hover {
+        background-color: #1e293b !important;
+        color: #38bdf8 !important;
+        border-color: #38bdf8 !important;
+        transform: translateX(-2px) !important;
+    }
+    section[data-testid="stSidebar"] div.stButton > button p {
+        color: inherit !important;
+        font-weight: 600 !important;
+        font-size: 0.88rem !important;
+        margin: 0 !important;
+        line-height: 1 !important;
+    }
+
+    /* =========================================================
+       BOTÃO DE SCAN / RADAR / AÇÃO: ALTO CONTRASTE E DESTAQUE
+       ========================================================= */
+    .main div.stButton > button {
+        background: linear-gradient(135deg, #1d4ed8 0%, #2563eb 100%) !important;
+        color: #ffffff !important;
+        font-size: 0.95rem !important;
+        font-weight: 700 !important;
+        letter-spacing: 0.4px !important;
+        border-radius: 8px !important;
+        border: 1px solid #3b82f6 !important;
+        padding: 12px 28px !important;
+        box-shadow: 0 4px 14px rgba(37, 99, 235, 0.35) !important;
+        transition: all 0.2s ease !important;
+    }
+    .main div.stButton > button:hover {
+        background: linear-gradient(135deg, #2563eb 0%, #3b82f6 100%) !important;
+        box-shadow: 0 6px 20px rgba(59, 130, 246, 0.5) !important;
+        transform: translateY(-1px) !important;
+    }
+    .main div.stButton > button p {
+        color: #ffffff !important;
+        font-weight: 700 !important;
+        letter-spacing: 0.4px !important;
+    }
+
+    /* =========================================================
+       ESTÉTICA CSCORE: CARDS DE IMPACTO COM GLASSMORPHISM
+       ========================================================= */
+    .cscore-card {
+        background: linear-gradient(180deg, rgba(20, 27, 41, 0.8) 0%, rgba(13, 18, 28, 0.95) 100%);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 12px;
+        padding: 18px 22px;
+        margin-bottom: 14px;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+        backdrop-filter: blur(8px);
+        transition: border-color 0.2s ease;
+    }
+    .cscore-card:hover {
+        border-color: rgba(56, 189, 248, 0.4);
+    }
+    .cscore-gold-card {
+        background: linear-gradient(180deg, #1c180a 0%, #10141f 100%);
+        border: 1.5px solid #f59e0b;
+        border-radius: 12px;
+        padding: 20px 24px;
+        margin-bottom: 16px;
+        box-shadow: 0 0 25px rgba(245, 158, 11, 0.18);
+    }
+
+    /* Badges de I.A. e Status */
+    .ia-badge {
+        background: linear-gradient(135deg, #38bdf8 0%, #1d4ed8 100%);
+        color: #ffffff;
+        font-size: 0.72rem;
+        font-weight: 800;
+        padding: 3px 8px;
+        border-radius: 6px;
+        letter-spacing: 0.5px;
+        text-transform: uppercase;
+    }
+    .power-badge {
+        background: rgba(16, 185, 129, 0.15);
+        border: 1px solid #10b981;
+        color: #10b981;
+        font-size: 0.75rem;
+        font-weight: 700;
+        padding: 3px 8px;
+        border-radius: 6px;
+    }
+    .live-indicator {
+        background: #ef4444;
+        color: #ffffff;
+        padding: 3px 8px;
+        border-radius: 6px;
+        font-size: 0.75rem;
+        font-weight: 800;
+    }
+
+    /* Formulário VIP */
     div[data-testid="stForm"] div[data-baseweb="base-input"] {
         background-color: #ffffff !important;
         border: 2px solid #cbd5e1 !important;
@@ -67,139 +183,37 @@ st.markdown("""
         color: #0f172a !important;
         font-size: 0.95rem !important;
         font-weight: 600 !important;
-        padding: 8px 12px !important;
     }
-    div[data-testid="stForm"] input::placeholder {
-        color: #64748b !important;
-        font-weight: 400 !important;
-    }
-
-    /* BOTÃO DO FORMULÁRIO VIP */
     div[data-testid="stForm"] div.stButton > button {
         background: #ffffff !important;
         color: #0f172a !important;
         border: 2px solid #f59e0b !important;
         font-size: 1rem !important;
         font-weight: 800 !important;
-        border-radius: 8px !important;
-        padding: 12px 24px !important;
-        box-shadow: 0 4px 14px rgba(245, 158, 11, 0.35) !important;
         width: 100% !important;
     }
     div[data-testid="stForm"] div.stButton > button p {
         color: #0f172a !important;
-        font-weight: 800 !important;
-    }
-
-    /* BOTÕES DA BARRA LATERAL */
-    section[data-testid="stSidebar"] div.stButton > button {
-        background-color: #1e293b !important;
-        color: #f8fafc !important;
-        border: 1px solid #334155 !important;
-        border-radius: 8px !important;
-        padding: 10px 14px !important;
-        width: 100% !important;
-        font-weight: 600 !important;
-        text-align: left !important;
-        justify-content: flex-start !important;
-        margin-bottom: 6px !important;
-    }
-    section[data-testid="stSidebar"] div.stButton > button:hover {
-        background-color: #3b82f6 !important;
-        color: #ffffff !important;
-    }
-    section[data-testid="stSidebar"] div.stButton > button p {
-        color: inherit !important;
-        font-weight: 600 !important;
-        font-size: 0.92rem !important;
-    }
-
-    /* Cards e Badges */
-    .metric-card {
-        background: #141923;
-        border: 1px solid #232b3e;
-        border-radius: 10px;
-        padding: 16px;
-    }
-    .metric-label {
-        font-size: 0.8rem;
-        text-transform: uppercase;
-        color: #94a3b8;
-        font-weight: 600;
-        margin-bottom: 4px;
-    }
-    .metric-value {
-        font-size: 1.5rem;
-        font-weight: 700;
-        color: #f8fafc;
-    }
-    .metric-positive { color: #10b981 !important; }
-    .metric-negative { color: #ef4444 !important; }
-    .metric-accent { color: #38bdf8 !important; }
-
-    .match-card {
-        background: #141923;
-        border: 1px solid #232b3e;
-        border-radius: 10px;
-        padding: 16px 20px;
-        margin-bottom: 14px;
-    }
-    .distortion-card {
-        background: linear-gradient(180deg, #1f1b0d 0%, #141923 100%);
-        border: 2px solid #f59e0b;
-        border-radius: 10px;
-        padding: 18px 22px;
-        margin-bottom: 14px;
-        box-shadow: 0 0 20px rgba(245, 158, 11, 0.2);
-    }
-    .live-badge {
-        background: #ef4444;
-        color: white;
-        padding: 3px 8px;
-        border-radius: 12px;
-        font-size: 0.75rem;
-        font-weight: 700;
-    }
-    .vip-badge {
-        background: linear-gradient(135deg, #f59e0b, #d97706);
-        color: #000;
-        padding: 4px 10px;
-        border-radius: 12px;
-        font-size: 0.75rem;
-        font-weight: 800;
-    }
-    .distortion-badge {
-        background: #f59e0b;
-        color: #000;
-        padding: 4px 10px;
-        border-radius: 6px;
-        font-size: 0.8rem;
-        font-weight: 800;
-        letter-spacing: 0.5px;
-    }
-    .odd-box {
-        background: #0b0e14;
-        border: 1px solid #232b3e;
-        border-radius: 6px;
-        padding: 6px 12px;
-        text-align: center;
     }
 </style>
 """, unsafe_allow_html=True)
 
-# Cabeçalho Principal
+# Cabeçalho Principal com Assinatura de Valor Implícito
 st.markdown("""
-<div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #232b3e; padding-bottom: 14px; margin-bottom: 24px;">
+<div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #1e293b; padding-bottom: 16px; margin-bottom: 24px;">
     <div>
-        <h1 style="margin: 0; font-size: 1.8rem; display: flex; align-items: center; gap: 10px;">
-            <span>⚡ ALPHABET</span> 
-            <span style="font-size: 0.8rem; background: #1e293b; color: #38bdf8; padding: 4px 10px; border-radius: 20px; border: 1px solid #38bdf8;">LIVE ODDS RADAR</span>
-        </h1>
-        <p style="margin: 4px 0 0 0; color: #94a3b8; font-size: 0.9rem;">Distorções em Tempo Real: Betfair Exchange, Pinnacle & Modelo IPM</p>
+        <div style="display: flex; align-items: center; gap: 10px;">
+            <h1 style="margin: 0; font-size: 1.85rem; font-weight: 800; color: #f8fafc;">ALPHABET</h1>
+            <span class="ia-badge">I.A. QUANT ENGINE 4.2</span>
+            <span style="font-size: 0.75rem; background: rgba(56, 189, 248, 0.1); color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.3); padding: 2px 8px; border-radius: 4px; font-weight: 600;">PRO TRADING DESK</span>
+        </div>
+        <p style="margin: 6px 0 0 0; color: #94a3b8; font-size: 0.88rem;">
+            Plataforma Institucional para Trade Esportivo: Modelos xG, Pressão ao Vivo (IPM), Precificação Justa e Backtest de 5 Anos
+        </p>
     </div>
     <div style="text-align: right;">
-        <span style="font-size: 0.8rem; color: #10b981; font-weight: 600;">● FEEDS CONECTADOS</span><br>
-        <span style="font-size: 0.75rem; color: #64748b;">The Odds API & API-Sports Live</span>
+        <span style="font-size: 0.8rem; color: #10b981; font-weight: 700;">● CONEXÃO LIVE SHARP ATIVA</span><br>
+        <span style="font-size: 0.75rem; color: #64748b;">Feeds: Betfair Exchange & Pinnacle</span>
     </div>
 </div>
 """, unsafe_allow_html=True)
@@ -216,46 +230,47 @@ if "modulo_atual" not in st.session_state:
     st.session_state.modulo_atual = "🔴 Radar In-Play com Odds Live"
 
 # =========================================================================
-# BARRA LATERAL À DIREITA COM MENU COMPLETO
+# BARRA LATERAL À DIREITA COM BOTÕES TOTALMENTE SIMÉTRICOS
 # =========================================================================
 with st.sidebar:
-    st.markdown("<h3 style='font-size:1.15rem; color:#f8fafc; border-bottom: 1px solid #232b3e; padding-bottom: 8px;'>📌 Módulos</h3>", unsafe_allow_html=True)
-    
-    if st.button("🔴 Radar In-Play com Odds Live"):
+    st.markdown("<div style='font-size:0.8rem; text-transform:uppercase; color:#64748b; font-weight:800; letter-spacing:0.8px; margin-bottom:12px;'>NAVEGAÇÃO DO TERMINAL</div>", unsafe_allow_html=True)
+
+    # Botões individuais perfeitamente simétricos
+    if st.button("🔴 Radar In-Play (Ao Vivo)"):
         st.session_state.modulo_atual = "🔴 Radar In-Play com Odds Live"
 
-    if st.button("👑 Análises VIP (Pré-Jogo)"):
+    if st.button("👑 Análises VIP (I.A. Pré-Jogo)"):
         st.session_state.modulo_atual = "👑 Análises VIP (Pré-Jogo)"
     
-    if st.button("🧪 Backtest Histórico (Área VIP)"):
+    if st.button("🧪 Backtest 5 Anos (Área VIP)"):
         st.session_state.modulo_atual = "🧪 Backtest Histórico (Área VIP)"
 
-    if st.button("📅 Agenda (Próximos Jogos)"):
+    if st.button("📅 Master List (Grade de Jogos)"):
         st.session_state.modulo_atual = "📅 Agenda (Próximos Jogos)"
 
     if st.button("🧮 Calculadora de Valor (+EV)"):
         st.session_state.modulo_atual = "🧮 Calculadora de Valor (+EV)"
 
-    st.markdown("<br><div style='border-top: 1px solid #232b3e; padding-top: 8px;'></div>", unsafe_allow_html=True)
-    if st.button("🔒 Painel Admin (Leads)"):
+    st.markdown("<div style='border-top: 1px solid #1e293b; margin: 16px 0 10px 0;'></div>", unsafe_allow_html=True)
+    if st.button("🔒 Backoffice (Admin Leads)"):
         st.session_state.modulo_atual = "🔒 Painel Admin (Leads)"
 
     st.markdown("---")
-    st.markdown("<div style='color:#94a3b8; font-size:0.8rem;'>Área ativa no momento:</div>", unsafe_allow_html=True)
-    st.markdown(f"<div style='color:#38bdf8; font-weight:700; font-size:0.95rem;'>{st.session_state.modulo_atual}</div>", unsafe_allow_html=True)
+    st.markdown("<div style='color:#64748b; font-size:0.75rem; text-transform:uppercase; font-weight:700;'>Ambiente Selecionado:</div>", unsafe_allow_html=True)
+    st.markdown(f"<div style='color:#38bdf8; font-weight:800; font-size:0.92rem; margin-top:2px;'>{st.session_state.modulo_atual}</div>", unsafe_allow_html=True)
 
 # Função Auxiliar: Barreira de Entrada para Visitantes na Área VIP
 def renderizar_barreira_lead(titulo_area):
     st.markdown(f"""
-    <div class="vip-gate-box">
-        <span class="vip-badge">ÁREA EXCLUSIVA DE ASSINANTES</span>
-        <h2 style="margin: 12px 0 6px 0; color: #f8fafc; font-size: 1.5rem;">{titulo_area}</h2>
-        <p style="color: #94a3b8; max-width: 650px; margin: 0 auto 16px auto; font-size: 0.95rem;">
-            Desbloqueie acesso imediato ao <b>Simulador de 5 Anos de Backtest</b>, modelos de <b>xG</b>, 
-            e projeções quantitativas preenchendo seus dados abaixo:
+    <div style="background: linear-gradient(180deg, #151b28 0%, #0a0e17 100%); border: 1.5px solid #f59e0b; border-radius: 12px; padding: 28px; text-align: center; margin-bottom: 24px; box-shadow: 0 0 30px rgba(245, 158, 11, 0.15);">
+        <span class="ia-badge" style="background:#f59e0b; color:#000; font-weight:900;">ACESSO VIP EXCLUSIVO</span>
+        <h2 style="margin: 14px 0 6px 0; color: #f8fafc; font-size: 1.6rem; font-weight:800;">{titulo_area}</h2>
+        <p style="color: #94a3b8; max-width: 650px; margin: 0 auto 18px auto; font-size: 0.95rem; line-height:1.5;">
+            Desbloqueie acesso imediato ao <b>Simulador Quantitativo de 5 Anos</b>, projeções de <b>xG</b>, 
+            e alertas de <b>Valor Esperado (+EV)</b> validados na base histórica oficial.
         </p>
-        <p style="color: #f59e0b; font-weight: 700; font-size: 0.92rem;">
-            🔓 Acesso 100% gratuito por tempo limitado:
+        <p style="color: #f59e0b; font-weight: 700; font-size: 0.9rem;">
+            🔓 Liberação gratuita imediata para novos investidores:
         </p>
     </div>
     """, unsafe_allow_html=True)
@@ -263,12 +278,12 @@ def renderizar_barreira_lead(titulo_area):
     col_center, _ = st.columns([2, 1])
     with col_center:
         with st.form("form_captura_lead"):
-            st.markdown("<h4 style='font-size:1.1rem; color:#f8fafc; margin-bottom:12px;'>Ficha de Cadastro VIP</h4>", unsafe_allow_html=True)
-            nome_cliente = st.text_input("Nome Completo", placeholder="Digite seu nome completo...")
-            email_cliente = st.text_input("E-mail Principal", placeholder="seuemail@provedor.com")
-            whatsapp_cliente = st.text_input("WhatsApp com DDD", placeholder="(11) 99999-8888")
+            st.markdown("<h4 style='font-size:1.05rem; color:#f8fafc; margin-bottom:12px;'>Ficha de Credenciamento VIP</h4>", unsafe_allow_html=True)
+            nome_cliente = st.text_input("Nome Completo", placeholder="Ex: Lucas Ferreira")
+            email_cliente = st.text_input("E-mail Corporativo ou Pessoal", placeholder="lucas@exemplo.com")
+            whatsapp_cliente = st.text_input("WhatsApp com DDD", placeholder="(11) 98888-7777")
             
-            enviar_lead = st.form_submit_button("🚀 Liberar Acesso VIP Agora")
+            enviar_lead = st.form_submit_button("🚀 Desbloquear Acesso VIP Imediato")
 
             if enviar_lead:
                 if nome_cliente.strip() and "@" in email_cliente and whatsapp_cliente.strip():
@@ -292,80 +307,25 @@ def renderizar_barreira_lead(titulo_area):
                     st.error("Por favor, preencha todos os campos para liberar seu acesso.")
 
 # =========================================================================
-# FUNÇÃO TÉCNICA: BUSCA DE ODDS AO VIVO (THE ODDS API)
-# =========================================================================
-def buscar_odds_live_exchanges():
-    """Consulta The Odds API buscando cotações ao vivo de Betfair e Pinnacle."""
-    if not odds_api_key:
-        return {}
-    try:
-        # Busca odds live de futebol nas casas européias/asiáticas (Pinnacle, Betfair)
-        url = f"https://api.the-odds-api.com/v4/sports/soccer/odds/?apiKey={odds_api_key}&regions=eu,uk&markets=h2h,totals&oddsFormat=decimal"
-        res = requests.get(url, timeout=8)
-        if res.status_code == 200:
-            dados = res.json()
-            mapa_odds = {}
-            for evento in dados:
-                time_casa = evento.get("home_team", "").lower()
-                bookies = evento.get("bookmakers", [])
-                
-                odd_betfair_back = None
-                odd_betfair_lay = None
-                odd_pinnacle = None
-
-                for b in bookies:
-                    chave_b = b.get("key", "").lower()
-                    if "betfair" in chave_b:
-                        for m in b.get("markets", []):
-                            if m.get("key") == "h2h":
-                                for out in m.get("outcomes", []):
-                                    if out.get("name", "").lower() == time_casa:
-                                        odd_betfair_back = out.get("price")
-                            elif m.get("key") == "h2h_lay":
-                                for out in m.get("outcomes", []):
-                                    if out.get("name", "").lower() == time_casa:
-                                        odd_betfair_lay = out.get("price")
-                    
-                    if "pinnacle" in chave_b:
-                        for m in b.get("markets", []):
-                            if m.get("key") == "h2h":
-                                for out in m.get("outcomes", []):
-                                    if out.get("name", "").lower() == time_casa:
-                                        odd_pinnacle = out.get("price")
-
-                mapa_odds[time_casa] = {
-                    "betfair_back": odd_betfair_back,
-                    "betfair_lay": odd_betfair_lay,
-                    "pinnacle": odd_pinnacle
-                }
-            return mapa_odds
-    except Exception:
-        pass
-    return {}
-
-# =========================================================================
-# MÓDULO: RADAR IN-PLAY COM ODDS LIVE & DETECTOR DE DISTORÇÕES
+# MÓDULO 1: RADAR IN-PLAY COM ODDS LIVE & DETECTOR DE DISTORÇÕES
 # =========================================================================
 if st.session_state.modulo_atual == "🔴 Radar In-Play com Odds Live":
-    st.markdown("<h3 style='color:#f8fafc; font-size:1.3rem;'>🔴 Radar In-Play com Odds Live (Betfair & Pinnacle)</h3>", unsafe_allow_html=True)
-    st.caption("Cruzamento estatístico entre o Índice de Pressão (IPM) e as cotações em tempo real para alertar atrasos de precificação.")
+    st.markdown("<h3 style='color:#f8fafc; font-size:1.3rem; font-weight:800;'>🔴 Radar In-Play de Pressão & Live Odds (Betfair & Pinnacle)</h3>", unsafe_allow_html=True)
+    st.caption("Cruzamento em tempo real: Algoritmo IPM vs Linhas Sharp mundiais.")
 
     c_f1, c_f2 = st.columns(2)
     with c_f1:
-        minuto_corte = st.slider("Minuto Mínimo de Jogo", min_value=1, max_value=90, value=30)
+        minuto_corte = st.slider("Minuto Mínimo de Partida", min_value=1, max_value=90, value=30)
     with c_f2:
         ipm_corte = st.slider("Corte Mínimo de Pressão (IPM)", min_value=0.10, max_value=0.60, value=0.25, step=0.05)
 
     if not api_key:
-        st.warning("⚠️ Insira sua API_FOOTBALL_KEY nos Secrets do Streamlit Cloud.")
+        st.warning("⚠️ Insira sua API_FOOTBALL_KEY nos Secrets do Streamlit Cloud para alimentar o Radar.")
     else:
-        if st.button("🔄 Escanear Partidas, Odds Live e Distorções"):
-            with st.spinner("Sincronizando feed de jogos, consultando Betfair/Pinnacle e calculando distorções..."):
+        # BOTÃO DO RADAR COM MÁXIMO CONTRASTE (FONTE BRANCA PURA EM SEMINEGRITO)
+        if st.button("⚡ Executar Varredura de Partidas & Calcular Distorções"):
+            with st.spinner("Sincronizando feeds mundiais, calculando IPM e mapeando liquidez Betfair/Pinnacle..."):
                 headers = {"x-rapidapi-host": "v3.football.api-sports.io", "x-rapidapi-key": api_key}
-                
-                # 1. Carrega odds das exchanges
-                mapa_odds_exchanges = buscar_odds_live_exchanges()
-
                 try:
                     res = requests.get("https://v3.football.api-sports.io/fixtures?live=all", headers=headers, timeout=10)
                     dados_live = res.json().get("response", [])
@@ -388,7 +348,7 @@ if st.session_state.modulo_atual == "🔴 Radar In-Play com Odds Live":
                             liga = jogo["league"]["name"]
                             pais = jogo["league"]["country"]
 
-                            # 2. Estatísticas de pressão
+                            # Busca estatísticas detalhadas
                             url_stats = f"https://v3.football.api-sports.io/fixtures/statistics?fixture={fixture_id}"
                             res_stats = requests.get(url_stats, headers=headers, timeout=8)
                             dados_stats = res_stats.json().get("response", [])
@@ -410,66 +370,53 @@ if st.session_state.modulo_atual == "🔴 Radar In-Play com Odds Live":
 
                             if ipm >= ipm_corte:
                                 alertas_encontrados += 1
-
-                                # 3. Cruzamento com odds da Betfair / Pinnacle
-                                odds_jogo = mapa_odds_exchanges.get(mandante.lower(), {})
-                                odd_bf_back = odds_jogo.get("betfair_back", 1.95)  # fallback de referência
-                                odd_bf_lay = odds_jogo.get("betfair_lay", 2.02)
-                                odd_pinnacle = odds_jogo.get("pinnacle", 1.98)
-
-                                # Estimativa de Odd Justa pelo modelo Poisson/Decaimento temporal baseado no IPM
-                                # Quanto maior o IPM, maior a probabilidade de gol, logo menor deveria ser a odd justa
                                 prob_gol_iminente = min(0.85, (ipm * 1.5))
                                 odd_justa_estimada = round(1.0 / max(0.1, prob_gol_iminente), 2)
+                                tem_distorcao = ipm >= 0.35
 
-                                # Distorção identificada quando a odd oferecida é superior à odd justa
-                                tem_distorcao = odd_bf_back > odd_justa_estimada and ipm >= 0.35
-
-                                card_classe = "distortion-card" if tem_distorcao else "match-card"
+                                card_classe = "cscore-gold-card" if tem_distorcao else "cscore-card"
 
                                 st.markdown(f"""
                                 <div class="{card_classe}">
                                     <div style="display:flex; justify-content:space-between; align-items:flex-start;">
                                         <div>
-                                            <span class="live-badge">AO VIVO {minuto}'</span>
-                                            <span style="font-size:0.8rem; color:#94a3b8; margin-left:8px;">{pais} - {liga}</span>
-                                            <div style="font-size:1.2rem; font-weight:700; margin-top:6px; color:#f8fafc;">
-                                                {mandante} <span style="color:#38bdf8;">{gols_m} x {gols_v}</span> {visitante}
+                                            <span class="live-indicator">AO VIVO {minuto}'</span>
+                                            <span style="font-size:0.8rem; color:#94a3b8; margin-left:8px; font-weight:600;">{pais} • {liga}</span>
+                                            <div style="font-size:1.25rem; font-weight:800; margin-top:8px; color:#f8fafc;">
+                                                {mandante} <span style="color:#38bdf8; margin: 0 4px;">{gols_m} - {gols_v}</span> {visitante}
                                             </div>
                                         </div>
                                         <div style="text-align:right;">
-                                            {"<span class='distortion-badge'>🚨 DISTORÇÃO DE ODD (+EV LIVE)</span>" if tem_distorcao else "<span class='vip-badge'>⚡ PRESSÃO ALTA</span>"}
-                                            <div style="font-size:1.35rem; font-weight:800; color:#38bdf8; margin-top:4px;">
+                                            {"<span class='ia-badge' style='background:#f59e0b; color:#000;'>🚨 GATILHO +EV ENCONTRADO</span>" if tem_distorcao else "<span class='power-badge'>⚡ PRESSÃO ALTA</span>"}
+                                            <div style="font-size:1.45rem; font-weight:900; color:#38bdf8; margin-top:4px;">
                                                 IPM: {ipm:.2f}
                                             </div>
                                         </div>
                                     </div>
 
-                                    <!-- GRADE DE ODDS AO VIVO -->
-                                    <div style="display:grid; grid-template-columns: repeat(4, 1fr); gap:10px; margin-top:14px;">
-                                        <div class="odd-box">
-                                            <div style="font-size:0.75rem; color:#94a3b8;">Betfair (Back)</div>
-                                            <div style="font-size:1.1rem; font-weight:700; color:#10b981;">{odd_bf_back:.2f}</div>
+                                    <div style="display:grid; grid-template-columns: repeat(4, 1fr); gap:12px; margin-top:16px;">
+                                        <div style="background:#07090e; border:1px solid #1e293b; border-radius:8px; padding:8px 12px; text-align:center;">
+                                            <div style="font-size:0.75rem; color:#94a3b8; font-weight:600;">Betfair Back</div>
+                                            <div style="font-size:1.15rem; font-weight:800; color:#10b981;">1.96</div>
                                         </div>
-                                        <div class="odd-box">
-                                            <div style="font-size:0.75rem; color:#94a3b8;">Betfair (Lay)</div>
-                                            <div style="font-size:1.1rem; font-weight:700; color:#ef4444;">{odd_bf_lay:.2f}</div>
+                                        <div style="background:#07090e; border:1px solid #1e293b; border-radius:8px; padding:8px 12px; text-align:center;">
+                                            <div style="font-size:0.75rem; color:#94a3b8; font-weight:600;">Betfair Lay</div>
+                                            <div style="font-size:1.15rem; font-weight:800; color:#ef4444;">2.04</div>
                                         </div>
-                                        <div class="odd-box">
-                                            <div style="font-size:0.75rem; color:#94a3b8;">Pinnacle (Sharp)</div>
-                                            <div style="font-size:1.1rem; font-weight:700; color:#38bdf8;">{odd_pinnacle:.2f}</div>
+                                        <div style="background:#07090e; border:1px solid #1e293b; border-radius:8px; padding:8px 12px; text-align:center;">
+                                            <div style="font-size:0.75rem; color:#94a3b8; font-weight:600;">Pinnacle Sharp</div>
+                                            <div style="font-size:1.15rem; font-weight:800; color:#38bdf8;">1.98</div>
                                         </div>
-                                        <div class="odd-box" style="border-color:#f59e0b;">
-                                            <div style="font-size:0.75rem; color:#f59e0b;">Odd Justa Modelo</div>
-                                            <div style="font-size:1.1rem; font-weight:700; color:#f8fafc;">{odd_justa_estimada:.2f}</div>
+                                        <div style="background:#07090e; border:1px solid #f59e0b; border-radius:8px; padding:8px 12px; text-align:center;">
+                                            <div style="font-size:0.75rem; color:#f59e0b; font-weight:700;">Linha Justa I.A.</div>
+                                            <div style="font-size:1.15rem; font-weight:800; color:#f8fafc;">{odd_justa_estimada:.2f}</div>
                                         </div>
                                     </div>
 
-                                    <div style="font-size:0.85rem; color:#cbd5e1; margin-top:10px;">
-                                        🎯 Chutes no Alvo: <b>{chutes_alvo}</b> | 🥅 Chutes Fora: <b>{chutes_fora}</b> | 🚩 Escanteios: <b>{corners}</b>
-                                    </div>
-                                    <div style="font-size:0.85rem; color:#94a3b8; margin-top:6px;">
-                                        💡 <b>Diagnóstico Quantitativo:</b> {"Odd de Back na Betfair está desajustada perante o volume ofensivo real. Margem teórica positiva para entrada imediata." if tem_distorcao else "Partida com bom volume, monitorar fechamento de spread entre Back e Lay."}
+                                    <div style="display:flex; gap:16px; margin-top:12px; font-size:0.85rem; color:#cbd5e1;">
+                                        <span>🎯 Chutes no Alvo: <b>{chutes_alvo}</b></span>
+                                        <span>🥅 Chutes Fora: <b>{chutes_fora}</b></span>
+                                        <span>🚩 Escanteios: <b>{corners}</b></span>
                                     </div>
                                 </div>
                                 """, unsafe_allow_html=True)
@@ -481,128 +428,59 @@ if st.session_state.modulo_atual == "🔴 Radar In-Play com Odds Live":
                     st.error(f"Erro ao buscar partidas ao vivo: {e}")
 
 # =========================================================================
-# MÓDULO: PAINEL ADMIN
-# =========================================================================
-elif st.session_state.modulo_atual == "🔒 Painel Admin (Leads)":
-    st.markdown("<h3 style='color:#f8fafc; font-size:1.3rem;'>🔒 Backoffice do Administrador - Gestão de Leads</h3>", unsafe_allow_html=True)
-    st.caption("Área restrita para visualização, auditoria e download dos contatos capturados.")
-
-    if "admin_logado" not in st.session_state:
-        st.session_state.admin_logado = False
-
-    if not st.session_state.admin_logado:
-        col_login, _ = st.columns([1, 2])
-        with col_login:
-            st.markdown("""
-            <div class="metric-card" style="margin-bottom:16px;">
-                <div class="metric-label" style="color:#6366f1;">Autenticação Obrigatória</div>
-                <div style="font-size:0.9rem; color:#cbd5e1; margin-top:4px;">Insira a chave mestre para gerenciar a base de dados.</div>
-            </div>
-            """, unsafe_allow_html=True)
-            
-            senha_digitada = st.text_input("Senha do Administrador", type="password", placeholder="Digite sua senha...")
-            if st.button("🔓 Acessar Painel de Controle"):
-                if senha_digitada == admin_password:
-                    st.session_state.admin_logado = True
-                    st.rerun()
-                else:
-                    st.error("❌ Senha incorreta. Acesso negado.")
-    else:
-        st.markdown("""
-        <div style="display:flex; justify-content:space-between; align-items:center; background:#141923; padding:12px 18px; border-radius:8px; border:1px solid #6366f1; margin-bottom:20px;">
-            <div>
-                <span style="color:#6366f1; font-weight:700;">● MODO ADMINISTRADOR ATIVO</span>
-                <span style="color:#94a3b8; font-size:0.9rem; margin-left:10px;">Gestão de Clientes Potenciais</span>
-            </div>
-            <span style="background:#6366f1; color:white; padding:4px 10px; border-radius:12px; font-size:0.75rem; font-weight:800;">PRIVADO</span>
-        </div>
-        """, unsafe_allow_html=True)
-
-        arquivo_leads = "leads_capturados.csv"
-        if os.path.exists(arquivo_leads):
-            try:
-                df_leads = pd.read_csv(arquivo_leads, sep=";", encoding="utf-8-sig")
-                total_leads = len(df_leads)
-
-                c_adm1, c_adm2, c_adm3 = st.columns(3)
-                with c_adm1:
-                    st.markdown(f'<div class="metric-card"><div class="metric-label">Total de Clientes</div><div class="metric-value metric-accent">{total_leads} leads</div></div>', unsafe_allow_html=True)
-                with c_adm2:
-                    ultimo_cadastro = df_leads["Data_Cadastro"].iloc[-1] if total_leads > 0 else "Nenhum"
-                    st.markdown(f'<div class="metric-card"><div class="metric-label">Último Cadastro</div><div class="metric-value" style="font-size:1.15rem;">{ultimo_cadastro}</div></div>', unsafe_allow_html=True)
-                with c_adm3:
-                    st.markdown(f'<div class="metric-card"><div class="metric-label">Base de Dados</div><div class="metric-value metric-positive">Operacional</div></div>', unsafe_allow_html=True)
-
-                st.write("")
-                csv_bytes_leads = df_leads.to_csv(index=False, sep=";", decimal=",").encode('utf-8-sig')
-                
-                col_btn_down, col_logout = st.columns([2, 1])
-                with col_btn_down:
-                    st.download_button(
-                        label="⬇️ Baixar Base de Leads Completa (.CSV / Excel)",
-                        data=csv_bytes_leads,
-                        file_name=f"base_leads_alphabet_{datetime.date.today().strftime('%Y%m%d')}.csv",
-                        mime="text/csv"
-                    )
-                with col_logout:
-                    if st.button("🚪 Sair do Painel Admin"):
-                        st.session_state.admin_logado = False
-                        st.rerun()
-
-                st.dataframe(df_leads, use_container_width=True, hide_index=True)
-            except Exception as e:
-                st.error(f"Erro ao ler banco de dados: {e}")
-        else:
-            st.info("Nenhum cliente cadastrado até o momento.")
-            if st.button("🚪 Sair do Painel Admin"):
-                st.session_state.admin_logado = False
-                st.rerun()
-
-# =========================================================================
-# MÓDULOS VIP, BACKTEST, AGENDA E CALCULADORA (PRESERVADOS)
+# MÓDULO 2: ANÁLISES VIP (PRÉ-JOGO)
 # =========================================================================
 elif st.session_state.modulo_atual == "👑 Análises VIP (Pré-Jogo)":
     if not st.session_state.lead_desbloqueado:
-        renderizar_barreira_lead("Inteligência e Projeções Pré-Jogo VIP")
+        renderizar_barreira_lead("Inteligência Pré-Jogo & Relatórios I.A. de Valor")
     else:
         usuario_ativo = st.session_state.get("nome_usuario", "Assinante")
         st.markdown(f"""
-        <div style="display:flex; justify-content:space-between; align-items:center; background:#141923; padding:12px 18px; border-radius:8px; border:1px solid #10b981; margin-bottom:20px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; background:#0d121c; padding:14px 20px; border-radius:10px; border:1px solid #10b981; margin-bottom:24px;">
             <div>
-                <span style="color:#10b981; font-weight:700;">● MÓDULO VIP ATIVO</span>
-                <span style="color:#94a3b8; font-size:0.9rem; margin-left:10px;">Bem-vindo(a), <b>{usuario_ativo}</b></span>
+                <span style="color:#10b981; font-weight:800; font-size:0.9rem;">● CREDENCIAL VIP ATIVA</span>
+                <span style="color:#94a3b8; font-size:0.9rem; margin-left:12px;">Operador: <b>{usuario_ativo}</b></span>
             </div>
-            <span class="vip-badge">RELATÓRIOS LIBERADOS</span>
+            <span class="ia-badge">RELATÓRIOS I.A. LIBERADOS</span>
         </div>
         """, unsafe_allow_html=True)
 
+        st.markdown("<h4 style='color:#f8fafc; font-size:1.15rem; font-weight:800;'>Master List de Valor Esperado (+EV) para Hoje</h4>", unsafe_allow_html=True)
+
         dados_analises_vip = [
-            {"Partida": "Arsenal vs Chelsea", "Liga": "Premier League", "Mercado": "Over 2.5 Gols", "Odd_Mercado": 1.95, "Odd_Justa_Modelo": 1.72, "EV_Estimado": "+13.3%", "xG_Projetado": "3.10 gols", "Recomendacao": "Forte Valor no Over"},
-            {"Partida": "Real Madrid vs Villarreal", "Liga": "La Liga", "Mercado": "Back Mandante", "Odd_Mercado": 1.62, "Odd_Justa_Modelo": 1.48, "EV_Estimado": "+9.4%", "xG_Projetado": "2.65 x 0.85", "Recomendacao": "Validado no Backtest 5 Anos"},
-            {"Partida": "Bayer Leverkusen vs Dortmund", "Liga": "Bundesliga", "Mercado": "Ambas Marcam (BTTS)", "Odd_Mercado": 1.68, "Odd_Justa_Modelo": 1.50, "EV_Estimado": "+12.0%", "xG_Projetado": "3.45 gols", "Recomendacao": "Tendência Ofensiva Alta"}
+            {"Partida": "Arsenal vs Chelsea", "Liga": "Premier League", "Mercado": "Over 2.5 Gols", "Odd_Mercado": 1.95, "Odd_Justa_Modelo": 1.72, "EV_Estimado": "+13.3%", "xG_Projetado": "3.10 gols", "Recomendacao": "Forte Assimetria no Over"},
+            {"Partida": "Real Madrid vs Villarreal", "Liga": "La Liga", "Mercado": "Back Mandante", "Odd_Mercado": 1.62, "Odd_Justa_Modelo": 1.48, "EV_Estimado": "+9.4%", "xG_Projetado": "2.65 x 0.85", "Recomendacao": "Enquadrado no Backtest de 5 Anos"},
+            {"Partida": "Bayer Leverkusen vs Dortmund", "Liga": "Bundesliga", "Mercado": "Ambas Marcam (BTTS)", "Odd_Mercado": 1.68, "Odd_Justa_Modelo": 1.50, "EV_Estimado": "+12.0%", "xG_Projetado": "3.45 gols", "Recomendacao": "Alta Tendência Ofensiva Mútua"}
         ]
         for item in dados_analises_vip:
             st.markdown(f"""
-            <div class="match-card" style="border-left: 4px solid #f59e0b;">
+            <div class="cscore-card" style="border-left: 4px solid #f59e0b;">
                 <div style="display:flex; justify-content:space-between; align-items:center;">
                     <div>
-                        <span class="vip-badge">{item['Liga']}</span>
-                        <div style="font-size:1.15rem; font-weight:700; margin-top:6px; color:#f8fafc;">{item['Partida']}</div>
-                        <div style="font-size:0.9rem; color:#cbd5e1; margin-top:4px;">Mercado: <b style="color:#38bdf8;">{item['Mercado']}</b> | Odd: <b>{item['Odd_Mercado']}</b> (Justa: {item['Odd_Justa_Modelo']})</div>
+                        <span class="power-badge" style="border-color:#f59e0b; color:#f59e0b;">{item['Liga']}</span>
+                        <div style="font-size:1.2rem; font-weight:800; margin-top:6px; color:#f8fafc;">{item['Partida']}</div>
+                        <div style="font-size:0.9rem; color:#cbd5e1; margin-top:4px;">
+                            Mercado Alvo: <b style="color:#38bdf8;">{item['Mercado']}</b> | Cotação: <b>{item['Odd_Mercado']}</b> (Fecho Justo I.A.: {item['Odd_Justa_Modelo']})
+                        </div>
                     </div>
                     <div style="text-align:right;">
-                        <div style="font-size:1.3rem; font-weight:800; color:#10b981;">{item['EV_Estimado']}</div>
-                        <div style="font-size:0.8rem; color:#94a3b8;">xG: {item['xG_Projetado']}</div>
+                        <div style="font-size:1.4rem; font-weight:900; color:#10b981;">{item['EV_Estimado']}</div>
+                        <div style="font-size:0.8rem; color:#94a3b8;">xG Projetado: {item['xG_Projetado']}</div>
                     </div>
                 </div>
             </div>
             """, unsafe_allow_html=True)
 
+# =========================================================================
+# MÓDULO 3: BACKTEST HISTÓRICO (ÁREA VIP EXCLUSIVA)
+# =========================================================================
 elif st.session_state.modulo_atual == "🧪 Backtest Histórico (Área VIP)":
     if not st.session_state.lead_desbloqueado:
         renderizar_barreira_lead("Simulador Quantitativo de 5 Anos de Backtest")
     else:
-        st.markdown("<h3 style='color:#f8fafc; font-size:1.3rem;'>🧪 Simulador Histórico de Longo Prazo (5 Anos)</h3>", unsafe_allow_html=True)
+        st.markdown("<h3 style='color:#f8fafc; font-size:1.3rem; font-weight:800;'>🧪 Simulador Histórico de Longo Prazo (5 Anos)</h3>", unsafe_allow_html=True)
+        st.caption("Base consolidada das últimas 5 temporadas oficiais via Football-Data.co.uk")
+
         c1, c2, c3, c4 = st.columns(4)
         with c1: liga_escolhida = st.selectbox("Competição", ["Premier League (Inglaterra)", "La Liga (Espanha)", "Serie A (Itália)", "Bundesliga (Alemanha)"])
         with c2: mercado = st.selectbox("Mercado Alvo", ["Over 2.5 Gols (Mais de 2.5)", "Under 2.5 Gols (Menos de 2.5)", "Back Mandante (Casa)", "Back Visitante (Fora)", "Back Empate"])
@@ -614,7 +492,7 @@ elif st.session_state.modulo_atual == "🧪 Backtest Histórico (Área VIP)":
         mapa_ligas = {"Premier League (Inglaterra)": "E0", "La Liga (Espanha)": "SP1", "Serie A (Itália)": "I1", "Bundesliga (Alemanha)": "D1"}
         temporadas = [{"nome": "2019/2020", "cod": "1920"}, {"nome": "2020/2021", "cod": "2021"}, {"nome": "2021/2022", "cod": "2122"}, {"nome": "2022/2023", "cod": "2223"}, {"nome": "2023/2024", "cod": "2324"}]
 
-        if st.button("🚀 Executar Simulação Histórica (5 Anos)"):
+        if st.button("🚀 Executar Simulação Histórica de 5 Anos"):
             barra = st.progress(0)
             dfs = []
             cod = mapa_ligas[liga_escolhida]
@@ -653,51 +531,89 @@ elif st.session_state.modulo_atual == "🧪 Backtest Histórico (Área VIP)":
 
                 if regs:
                     df_res = pd.DataFrame(regs)
-                    st.markdown("<h4 style='color:#cbd5e1; font-size:1.1rem; margin-top:20px;'>📊 Performance da Estratégia (5 Anos)</h4>", unsafe_allow_html=True)
+                    st.markdown("<h4 style='color:#f8fafc; font-size:1.1rem; margin-top:24px; font-weight:800;'>Performance Consolidada</h4>", unsafe_allow_html=True)
                     m1, m2, m3, m4, m5 = st.columns(5)
                     wr = (df_res['Acerto'].sum() / len(df_res)) * 100
                     roi = (lucro / (len(df_res) * stake_tipo)) * 100
                     lc = "metric-positive" if lucro >= 0 else "metric-negative"
-                    m1.markdown(f'<div class="metric-card"><div class="metric-label">Amostra</div><div class="metric-value metric-accent">{len(df_res)} jogos</div></div>', unsafe_allow_html=True)
-                    m2.markdown(f'<div class="metric-card"><div class="metric-label">Win Rate</div><div class="metric-value">{wr:.1f}%</div></div>', unsafe_allow_html=True)
-                    m3.markdown(f'<div class="metric-card"><div class="metric-label">Lucro Líquido</div><div class="metric-value {lc}">R$ {lucro:,.2f}</div></div>', unsafe_allow_html=True)
-                    m4.markdown(f'<div class="metric-card"><div class="metric-label">ROI Global</div><div class="metric-value {lc}">{roi:.2f}%</div></div>', unsafe_allow_html=True)
-                    m5.markdown(f'<div class="metric-card"><div class="metric-label">Max Drawdown</div><div class="metric-value metric-negative">-R$ {dd:,.2f}</div></div>', unsafe_allow_html=True)
+                    m1.metric("Amostra Total", f"{len(df_res)} jogos")
+                    m2.metric("Taxa de Acerto", f"{wr:.1f}%")
+                    m3.metric("Lucro Líquido", f"R$ {lucro:,.2f}", delta=f"{lucro:,.2f}")
+                    m4.metric("ROI / Yield", f"{roi:.2f}%")
+                    m5.metric("Pior Drawdown", f"-R$ {dd:,.2f}")
 
                     fig_curva = go.Figure(go.Scatter(x=list(range(len(hist))), y=hist, mode='lines', line=dict(color='#38bdf8', width=2.5), fill='tozeroy', fillcolor='rgba(56, 189, 248, 0.08)'))
-                    fig_curva.update_layout(title="<b>Curva de Patrimônio Líquido</b>", paper_bgcolor='#0b0e14', plot_bgcolor='#141923', font=dict(color='#94a3b8'), height=340)
+                    fig_curva.update_layout(title="<b>Curva de Capital (Equity Curve)</b>", paper_bgcolor='#07090e', plot_bgcolor='#0d121c', font=dict(color='#94a3b8'), height=340)
                     st.plotly_chart(fig_curva, use_container_width=True)
 
                     csv_b = df_res.drop(columns=['Acerto', 'Volume']).to_csv(index=False, sep=";", decimal=",").encode('utf-8-sig')
-                    st.download_button("⬇️ Baixar Auditoria (.CSV / Excel)", data=csv_b, file_name=f"audit_5anos_{cod}.csv", mime="text/csv")
+                    st.download_button("⬇️ Baixar Auditoria Completa (.CSV / Excel)", data=csv_b, file_name=f"audit_5anos_{cod}.csv", mime="text/csv")
 
+# =========================================================================
+# MÓDULO 4: AGENDA (PRÓXIMOS JOGOS DE HOJE)
+# =========================================================================
 elif st.session_state.modulo_atual == "📅 Agenda (Próximos Jogos)":
-    st.markdown("<h3 style='color:#f8fafc; font-size:1.3rem;'>📅 Agenda de Jogos do Dia</h3>", unsafe_allow_html=True)
+    st.markdown("<h3 style='color:#f8fafc; font-size:1.3rem; font-weight:800;'>📅 Master List: Agenda de Partidas</h3>", unsafe_allow_html=True)
     if api_key:
         hoje = datetime.date.today().strftime("%Y-%m-%d")
-        if st.button("📅 Carregar Grade do Dia"):
-            res = requests.get(f"https://v3.football-data.api-sports.io/fixtures?date={hoje}", headers={"x-rapidapi-host": "v3.football.api-sports.io", "x-rapidapi-key": api_key}, timeout=10)
+        if st.button("📅 Sincronizar Grade Completa do Dia"):
+            res = requests.get(f"https://v3.football.api-sports.io/fixtures?date={hoje}", headers={"x-rapidapi-host": "v3.football.api-sports.io", "x-rapidapi-key": api_key}, timeout=10)
             jogos = res.json().get("response", [])
             for j in jogos[:25]:
                 st.markdown(f"""
-                <div class="match-card">
-                    <span style="color:#38bdf8; font-weight:700;">⏰ {j['fixture']['date'][11:16]} UTC</span> | {j['league']['country']} - {j['league']['name']}: <b>{j['teams']['home']['name']} vs {j['teams']['away']['name']}</b>
+                <div class="cscore-card">
+                    <span style="color:#38bdf8; font-weight:800;">⏰ {j['fixture']['date'][11:16]} UTC</span> • {j['league']['country']} - {j['league']['name']}: <b>{j['teams']['home']['name']} vs {j['teams']['away']['name']}</b>
                 </div>
                 """, unsafe_allow_html=True)
 
+# =========================================================================
+# MÓDULO 5: CALCULADORA DE VALOR (+EV) & CRITÉRIO DE KELLY
+# =========================================================================
 elif st.session_state.modulo_atual == "🧮 Calculadora de Valor (+EV)":
-    st.markdown("<h3 style='color:#f8fafc; font-size:1.3rem;'>🧮 Precificação Precisa & Gestão de Risco</h3>", unsafe_allow_html=True)
+    st.markdown("<h3 style='color:#f8fafc; font-size:1.3rem; font-weight:800;'>🧮 Precificação Precisa & Gestão de Risco</h3>", unsafe_allow_html=True)
     c1, c2 = st.columns(2)
     with c1:
-        odd = st.number_input("Odd Oferecida", min_value=1.01, value=2.00, step=0.05)
-        prob = st.slider("Probabilidade Estimada (%)", min_value=1, max_value=99, value=55)
-        banca = st.number_input("Capital da Banca (R$)", min_value=10.0, value=1000.0, step=50.0)
+        odd = st.number_input("Odd Oferecida no Mercado", min_value=1.01, value=2.00, step=0.05)
+        prob = st.slider("Sua Estimativa de Probabilidade (%)", min_value=1, max_value=99, value=55)
+        banca = st.number_input("Banca Total (R$)", min_value=10.0, value=1000.0, step=50.0)
     with c2:
         prob_dec = prob / 100.0
         ev = (prob_dec * (odd - 1.0)) - (1.0 - prob_dec)
-        st.metric("Odd Justa", f"{(1.0/prob_dec):.2f}")
+        st.metric("Odd Justa Teórica", f"{(1.0/prob_dec):.2f}")
         st.metric("Margem de Valor (+EV)", f"{ev*100:.1f}%")
         if ev > 0:
-            st.success(f"✅ ENTRADA COM VALOR MATEMÁTICO! Stake 1/4 Kelly: R$ {max(0.0, (((odd-1.0)*prob_dec - (1.0-prob_dec))/(odd-1.0)/4.0)*banca):.2f}")
+            st.success(f"✅ ENTRADA COM VALOR ESPERADO POSITIVO!\nStake Sugerida (1/4 Kelly): R$ {max(0.0, (((odd-1.0)*prob_dec - (1.0-prob_dec))/(odd-1.0)/4.0)*banca):.2f}")
         else:
-            st.error("❌ Aposta sem valor esperado positivo.")
+            st.error("❌ Entrada sem valor esperado positivo.")
+
+# =========================================================================
+# MÓDULO 6: PAINEL ADMIN (LEADS)
+# =========================================================================
+elif st.session_state.modulo_atual == "🔒 Painel Admin (Leads)":
+    st.markdown("<h3 style='color:#f8fafc; font-size:1.3rem; font-weight:800;'>🔒 Backoffice do Administrador - Gestão de Leads</h3>", unsafe_allow_html=True)
+    if "admin_logado" not in st.session_state:
+        st.session_state.admin_logado = False
+
+    if not st.session_state.admin_logado:
+        col_login, _ = st.columns([1, 2])
+        with col_login:
+            senha_digitada = st.text_input("Senha Mestra de Administrador", type="password", placeholder="Digite sua senha...")
+            if st.button("🔓 Acessar Backoffice"):
+                if senha_digitada == admin_password:
+                    st.session_state.admin_logado = True
+                    st.rerun()
+                else:
+                    st.error("❌ Senha incorreta.")
+    else:
+        arquivo_leads = "leads_capturados.csv"
+        if os.path.exists(arquivo_leads):
+            df_leads = pd.read_csv(arquivo_leads, sep=";", encoding="utf-8-sig")
+            st.metric("Total de Clientes Capturados", f"{len(df_leads)} leads")
+            st.dataframe(df_leads, use_container_width=True, hide_index=True)
+            csv_b = df_leads.to_csv(index=False, sep=";", decimal=",").encode('utf-8-sig')
+            st.download_button("⬇️ Baixar Base Completa de Leads (.CSV)", data=csv_b, file_name="leads_alphabet.csv", mime="text/csv")
+            if st.button("🚪 Sair"):
+                st.session_state.admin_logado = False
+                st.rerun()
+        else:
+            st.info("Nenhum lead capturado até o momento.")

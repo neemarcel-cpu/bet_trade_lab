@@ -6,10 +6,10 @@ import os
 import plotly.graph_objects as go
 
 # =========================================================================
-# 1. CONFIGURAÇÃO DA PÁGINA & CSS: DESIGN SYSTEM INSPIRADO EM CSCORE & TERMINAIS QUANT
+# 1. CONFIGURAÇÃO DA PÁGINA & CSS: DESIGN SYSTEM MINIMALISTA & SIMETRIA TOTAL
 # =========================================================================
 st.set_page_config(
-    page_title="AlphaBet | Quant I.A. & Live Terminal",
+    page_title="AlphaBet | Quant Terminal & Live Radar",
     page_icon="⚡",
     layout="wide",
     initial_sidebar_state="expanded"
@@ -22,7 +22,8 @@ st.markdown("""
         order: 2 !important;
         border-left: 1px solid #1e293b !important;
         border-right: none !important;
-        background: linear-gradient(180deg, #0d121c 0%, #080c14 100%) !important;
+        background: linear-gradient(180deg, #0b0f17 0%, #070a10 100%) !important;
+        padding-top: 1.5rem !important;
     }
     div[data-testid="stSidebarCollapseButton"] {
         order: 2 !important;
@@ -36,7 +37,7 @@ st.markdown("""
         flex-direction: row-reverse !important;
     }
 
-    /* Fundo da Aplicação */
+    /* Fundo Geral da Aplicação */
     .stApp {
         background-color: #07090e;
         color: #e2e8f0;
@@ -56,54 +57,61 @@ st.markdown("""
     }
 
     /* =========================================================
-       BOTÕES DA BARRA LATERAL RIGOROSAMENTE SIMÉTRICOS
+       BOTÕES DA BARRA LATERAL RIGOROSAMENTE SIMÉTRICOS (BOX-SIZING FIXO)
        ========================================================= */
-    section[data-testid="stSidebar"] div.stButton {
+    section[data-testid="stSidebar"] div[data-testid="stVerticalBlock"] > div.stButton {
         width: 100% !important;
-        margin-bottom: 8px !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        margin-bottom: 6px !important;
     }
     section[data-testid="stSidebar"] div.stButton > button {
+        box-sizing: border-box !important;
         width: 100% !important;
-        height: 48px !important;
-        min-height: 48px !important;
-        background-color: #111827 !important;
-        color: #cbd5e1 !important;
-        border: 1px solid #1f2937 !important;
-        border-radius: 8px !important;
-        padding: 0 16px !important;
+        height: 46px !important;
+        min-height: 46px !important;
+        max-height: 46px !important;
+        background-color: #0f172a !important;
+        color: #94a3b8 !important;
+        border: 1px solid #1e293b !important;
+        border-radius: 6px !important;
+        padding: 0 14px !important;
         display: flex !important;
         align-items: center !important;
         justify-content: flex-start !important;
         text-align: left !important;
-        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2) !important;
+        transition: all 0.15s ease-in-out !important;
     }
     section[data-testid="stSidebar"] div.stButton > button:hover {
         background-color: #1e293b !important;
         color: #38bdf8 !important;
         border-color: #38bdf8 !important;
-        transform: translateX(-2px) !important;
     }
     section[data-testid="stSidebar"] div.stButton > button p {
         color: inherit !important;
         font-weight: 600 !important;
-        font-size: 0.88rem !important;
+        font-size: 0.85rem !important;
+        letter-spacing: 0.3px !important;
         margin: 0 !important;
+        padding: 0 !important;
         line-height: 1 !important;
+        white-space: nowrap !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
     }
 
     /* =========================================================
-       BOTÃO DE SCAN / RADAR / AÇÃO: ALTO CONTRASTE E DESTAQUE
+       BOTÃO DE SCAN / RADAR / AÇÃO: ALTO CONTRASTE REFORÇADO
        ========================================================= */
     .main div.stButton > button {
         background: linear-gradient(135deg, #1d4ed8 0%, #2563eb 100%) !important;
         color: #ffffff !important;
-        font-size: 0.95rem !important;
+        font-size: 0.92rem !important;
         font-weight: 700 !important;
         letter-spacing: 0.4px !important;
         border-radius: 8px !important;
         border: 1px solid #3b82f6 !important;
-        padding: 12px 28px !important;
+        padding: 12px 26px !important;
         box-shadow: 0 4px 14px rgba(37, 99, 235, 0.35) !important;
         transition: all 0.2s ease !important;
     }
@@ -124,7 +132,7 @@ st.markdown("""
     .cscore-card {
         background: linear-gradient(180deg, rgba(20, 27, 41, 0.8) 0%, rgba(13, 18, 28, 0.95) 100%);
         border: 1px solid rgba(255, 255, 255, 0.08);
-        border-radius: 12px;
+        border-radius: 10px;
         padding: 18px 22px;
         margin-bottom: 14px;
         box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
@@ -137,20 +145,20 @@ st.markdown("""
     .cscore-gold-card {
         background: linear-gradient(180deg, #1c180a 0%, #10141f 100%);
         border: 1.5px solid #f59e0b;
-        border-radius: 12px;
+        border-radius: 10px;
         padding: 20px 24px;
         margin-bottom: 16px;
         box-shadow: 0 0 25px rgba(245, 158, 11, 0.18);
     }
 
-    /* Badges de I.A. e Status */
+    /* Badges Minimalistas */
     .ia-badge {
         background: linear-gradient(135deg, #38bdf8 0%, #1d4ed8 100%);
         color: #ffffff;
         font-size: 0.72rem;
         font-weight: 800;
         padding: 3px 8px;
-        border-radius: 6px;
+        border-radius: 4px;
         letter-spacing: 0.5px;
         text-transform: uppercase;
     }
@@ -161,13 +169,13 @@ st.markdown("""
         font-size: 0.75rem;
         font-weight: 700;
         padding: 3px 8px;
-        border-radius: 6px;
+        border-radius: 4px;
     }
     .live-indicator {
         background: #ef4444;
         color: #ffffff;
         padding: 3px 8px;
-        border-radius: 6px;
+        border-radius: 4px;
         font-size: 0.75rem;
         font-weight: 800;
     }
@@ -227,42 +235,42 @@ if "lead_desbloqueado" not in st.session_state:
     st.session_state.lead_desbloqueado = False
 
 if "modulo_atual" not in st.session_state:
-    st.session_state.modulo_atual = "🔴 Radar In-Play com Odds Live"
+    st.session_state.modulo_atual = "// RADAR IN-PLAY (LIVE)"
 
 # =========================================================================
-# BARRA LATERAL À DIREITA COM BOTÕES TOTALMENTE SIMÉTRICOS
+# BARRA LATERAL À DIREITA COM BOTÕES TOTALMENTE SIMÉTRICOS E MINIMALISTAS
 # =========================================================================
 with st.sidebar:
-    st.markdown("<div style='font-size:0.8rem; text-transform:uppercase; color:#64748b; font-weight:800; letter-spacing:0.8px; margin-bottom:12px;'>NAVEGAÇÃO DO TERMINAL</div>", unsafe_allow_html=True)
+    st.markdown("<div style='font-size:0.75rem; text-transform:uppercase; color:#64748b; font-weight:800; letter-spacing:0.8px; margin-bottom:12px;'>TERMINAL NAVIGATION</div>", unsafe_allow_html=True)
 
-    # Botões individuais perfeitamente simétricos
-    if st.button("🔴 Radar In-Play (Ao Vivo)"):
-        st.session_state.modulo_atual = "🔴 Radar In-Play com Odds Live"
+    # Botões minimalistas com marcadores tipográficos de tamanho uniforme
+    if st.button("// RADAR IN-PLAY (LIVE)"):
+        st.session_state.modulo_atual = "// RADAR IN-PLAY (LIVE)"
 
-    if st.button("👑 Análises VIP (I.A. Pré-Jogo)"):
-        st.session_state.modulo_atual = "👑 Análises VIP (Pré-Jogo)"
+    if st.button(":: ANÁLISES VIP (PRÉ-JOGO)"):
+        st.session_state.modulo_atual = ":: ANÁLISES VIP (PRÉ-JOGO)"
     
-    if st.button("🧪 Backtest 5 Anos (Área VIP)"):
-        st.session_state.modulo_atual = "🧪 Backtest Histórico (Área VIP)"
+    if st.button(">> BACKTEST 5 ANOS (VIP)"):
+        st.session_state.modulo_atual = ">> BACKTEST 5 ANOS (VIP)"
 
-    if st.button("📅 Master List (Grade de Jogos)"):
-        st.session_state.modulo_atual = "📅 Agenda (Próximos Jogos)"
+    if st.button("## MASTER LIST (AGENDA)"):
+        st.session_state.modulo_atual = "## MASTER LIST (AGENDA)"
 
-    if st.button("🧮 Calculadora de Valor (+EV)"):
-        st.session_state.modulo_atual = "🧮 Calculadora de Valor (+EV)"
+    if st.button("+ CALCULADORA DE VALOR"):
+        st.session_state.modulo_atual = "+ CALCULADORA DE VALOR"
 
-    st.markdown("<div style='border-top: 1px solid #1e293b; margin: 16px 0 10px 0;'></div>", unsafe_allow_html=True)
-    if st.button("🔒 Backoffice (Admin Leads)"):
-        st.session_state.modulo_atual = "🔒 Painel Admin (Leads)"
+    st.markdown("<div style='border-top: 1px solid #1e293b; margin: 14px 0 10px 0;'></div>", unsafe_allow_html=True)
+    if st.button("* BACKOFFICE (ADMIN)"):
+        st.session_state.modulo_atual = "* BACKOFFICE (ADMIN)"
 
     st.markdown("---")
     st.markdown("<div style='color:#64748b; font-size:0.75rem; text-transform:uppercase; font-weight:700;'>Ambiente Selecionado:</div>", unsafe_allow_html=True)
-    st.markdown(f"<div style='color:#38bdf8; font-weight:800; font-size:0.92rem; margin-top:2px;'>{st.session_state.modulo_atual}</div>", unsafe_allow_html=True)
+    st.markdown(f"<div style='color:#38bdf8; font-weight:800; font-size:0.88rem; margin-top:2px;'>{st.session_state.modulo_atual}</div>", unsafe_allow_html=True)
 
 # Função Auxiliar: Barreira de Entrada para Visitantes na Área VIP
 def renderizar_barreira_lead(titulo_area):
     st.markdown(f"""
-    <div style="background: linear-gradient(180deg, #151b28 0%, #0a0e17 100%); border: 1.5px solid #f59e0b; border-radius: 12px; padding: 28px; text-align: center; margin-bottom: 24px; box-shadow: 0 0 30px rgba(245, 158, 11, 0.15);">
+    <div style="background: linear-gradient(180deg, #151b28 0%, #0a0e17 100%); border: 1.5px solid #f59e0b; border-radius: 10px; padding: 28px; text-align: center; margin-bottom: 24px; box-shadow: 0 0 30px rgba(245, 158, 11, 0.15);">
         <span class="ia-badge" style="background:#f59e0b; color:#000; font-weight:900;">ACESSO VIP EXCLUSIVO</span>
         <h2 style="margin: 14px 0 6px 0; color: #f8fafc; font-size: 1.6rem; font-weight:800;">{titulo_area}</h2>
         <p style="color: #94a3b8; max-width: 650px; margin: 0 auto 18px auto; font-size: 0.95rem; line-height:1.5;">
@@ -309,8 +317,8 @@ def renderizar_barreira_lead(titulo_area):
 # =========================================================================
 # MÓDULO 1: RADAR IN-PLAY COM ODDS LIVE & DETECTOR DE DISTORÇÕES
 # =========================================================================
-if st.session_state.modulo_atual == "🔴 Radar In-Play com Odds Live":
-    st.markdown("<h3 style='color:#f8fafc; font-size:1.3rem; font-weight:800;'>🔴 Radar In-Play de Pressão & Live Odds (Betfair & Pinnacle)</h3>", unsafe_allow_html=True)
+if st.session_state.modulo_atual == "// RADAR IN-PLAY (LIVE)":
+    st.markdown("<h3 style='color:#f8fafc; font-size:1.3rem; font-weight:800;'>Radar In-Play de Pressão & Live Odds (Betfair & Pinnacle)</h3>", unsafe_allow_html=True)
     st.caption("Cruzamento em tempo real: Algoritmo IPM vs Linhas Sharp mundiais.")
 
     c_f1, c_f2 = st.columns(2)
@@ -322,8 +330,8 @@ if st.session_state.modulo_atual == "🔴 Radar In-Play com Odds Live":
     if not api_key:
         st.warning("⚠️ Insira sua API_FOOTBALL_KEY nos Secrets do Streamlit Cloud para alimentar o Radar.")
     else:
-        # BOTÃO DO RADAR COM MÁXIMO CONTRASTE (FONTE BRANCA PURA EM SEMINEGRITO)
-        if st.button("⚡ Executar Varredura de Partidas & Calcular Distorções"):
+        # BOTÃO DO RADAR COM CONTRASTE REFORÇADO (BRANCO PURO EM SEMINEGRITO)
+        if st.button("Executar Varredura de Partidas & Calcular Distorções"):
             with st.spinner("Sincronizando feeds mundiais, calculando IPM e mapeando liquidez Betfair/Pinnacle..."):
                 headers = {"x-rapidapi-host": "v3.football.api-sports.io", "x-rapidapi-key": api_key}
                 try:
@@ -387,7 +395,7 @@ if st.session_state.modulo_atual == "🔴 Radar In-Play com Odds Live":
                                             </div>
                                         </div>
                                         <div style="text-align:right;">
-                                            {"<span class='ia-badge' style='background:#f59e0b; color:#000;'>🚨 GATILHO +EV ENCONTRADO</span>" if tem_distorcao else "<span class='power-badge'>⚡ PRESSÃO ALTA</span>"}
+                                            {"<span class='ia-badge' style='background:#f59e0b; color:#000;'>GATILHO +EV ENCONTRADO</span>" if tem_distorcao else "<span class='power-badge'>PRESSÃO ALTA</span>"}
                                             <div style="font-size:1.45rem; font-weight:900; color:#38bdf8; margin-top:4px;">
                                                 IPM: {ipm:.2f}
                                             </div>
@@ -395,28 +403,28 @@ if st.session_state.modulo_atual == "🔴 Radar In-Play com Odds Live":
                                     </div>
 
                                     <div style="display:grid; grid-template-columns: repeat(4, 1fr); gap:12px; margin-top:16px;">
-                                        <div style="background:#07090e; border:1px solid #1e293b; border-radius:8px; padding:8px 12px; text-align:center;">
+                                        <div style="background:#07090e; border:1px solid #1e293b; border-radius:6px; padding:8px 12px; text-align:center;">
                                             <div style="font-size:0.75rem; color:#94a3b8; font-weight:600;">Betfair Back</div>
                                             <div style="font-size:1.15rem; font-weight:800; color:#10b981;">1.96</div>
                                         </div>
-                                        <div style="background:#07090e; border:1px solid #1e293b; border-radius:8px; padding:8px 12px; text-align:center;">
+                                        <div style="background:#07090e; border:1px solid #1e293b; border-radius:6px; padding:8px 12px; text-align:center;">
                                             <div style="font-size:0.75rem; color:#94a3b8; font-weight:600;">Betfair Lay</div>
                                             <div style="font-size:1.15rem; font-weight:800; color:#ef4444;">2.04</div>
                                         </div>
-                                        <div style="background:#07090e; border:1px solid #1e293b; border-radius:8px; padding:8px 12px; text-align:center;">
+                                        <div style="background:#07090e; border:1px solid #1e293b; border-radius:6px; padding:8px 12px; text-align:center;">
                                             <div style="font-size:0.75rem; color:#94a3b8; font-weight:600;">Pinnacle Sharp</div>
                                             <div style="font-size:1.15rem; font-weight:800; color:#38bdf8;">1.98</div>
                                         </div>
-                                        <div style="background:#07090e; border:1px solid #f59e0b; border-radius:8px; padding:8px 12px; text-align:center;">
+                                        <div style="background:#07090e; border:1px solid #f59e0b; border-radius:6px; padding:8px 12px; text-align:center;">
                                             <div style="font-size:0.75rem; color:#f59e0b; font-weight:700;">Linha Justa I.A.</div>
                                             <div style="font-size:1.15rem; font-weight:800; color:#f8fafc;">{odd_justa_estimada:.2f}</div>
                                         </div>
                                     </div>
 
                                     <div style="display:flex; gap:16px; margin-top:12px; font-size:0.85rem; color:#cbd5e1;">
-                                        <span>🎯 Chutes no Alvo: <b>{chutes_alvo}</b></span>
-                                        <span>🥅 Chutes Fora: <b>{chutes_fora}</b></span>
-                                        <span>🚩 Escanteios: <b>{corners}</b></span>
+                                        <span>Chutes no Alvo: <b>{chutes_alvo}</b></span>
+                                        <span>Chutes Fora: <b>{chutes_fora}</b></span>
+                                        <span>Escanteios: <b>{corners}</b></span>
                                     </div>
                                 </div>
                                 """, unsafe_allow_html=True)
@@ -430,7 +438,7 @@ if st.session_state.modulo_atual == "🔴 Radar In-Play com Odds Live":
 # =========================================================================
 # MÓDULO 2: ANÁLISES VIP (PRÉ-JOGO)
 # =========================================================================
-elif st.session_state.modulo_atual == "👑 Análises VIP (Pré-Jogo)":
+elif st.session_state.modulo_atual == ":: ANÁLISES VIP (PRÉ-JOGO)":
     if not st.session_state.lead_desbloqueado:
         renderizar_barreira_lead("Inteligência Pré-Jogo & Relatórios I.A. de Valor")
     else:
@@ -438,7 +446,7 @@ elif st.session_state.modulo_atual == "👑 Análises VIP (Pré-Jogo)":
         st.markdown(f"""
         <div style="display:flex; justify-content:space-between; align-items:center; background:#0d121c; padding:14px 20px; border-radius:10px; border:1px solid #10b981; margin-bottom:24px;">
             <div>
-                <span style="color:#10b981; font-weight:800; font-size:0.9rem;">● CREDENCIAL VIP ATIVA</span>
+                <span style="color:#10b981; font-weight:800; font-size:0.9rem;">CREDENCIAL VIP ATIVA</span>
                 <span style="color:#94a3b8; font-size:0.9rem; margin-left:12px;">Operador: <b>{usuario_ativo}</b></span>
             </div>
             <span class="ia-badge">RELATÓRIOS I.A. LIBERADOS</span>
@@ -474,11 +482,11 @@ elif st.session_state.modulo_atual == "👑 Análises VIP (Pré-Jogo)":
 # =========================================================================
 # MÓDULO 3: BACKTEST HISTÓRICO (ÁREA VIP EXCLUSIVA)
 # =========================================================================
-elif st.session_state.modulo_atual == "🧪 Backtest Histórico (Área VIP)":
+elif st.session_state.modulo_atual == ">> BACKTEST 5 ANOS (VIP)":
     if not st.session_state.lead_desbloqueado:
         renderizar_barreira_lead("Simulador Quantitativo de 5 Anos de Backtest")
     else:
-        st.markdown("<h3 style='color:#f8fafc; font-size:1.3rem; font-weight:800;'>🧪 Simulador Histórico de Longo Prazo (5 Anos)</h3>", unsafe_allow_html=True)
+        st.markdown("<h3 style='color:#f8fafc; font-size:1.3rem; font-weight:800;'>Simulador Histórico de Longo Prazo (5 Anos)</h3>", unsafe_allow_html=True)
         st.caption("Base consolidada das últimas 5 temporadas oficiais via Football-Data.co.uk")
 
         c1, c2, c3, c4 = st.columns(4)
@@ -492,7 +500,7 @@ elif st.session_state.modulo_atual == "🧪 Backtest Histórico (Área VIP)":
         mapa_ligas = {"Premier League (Inglaterra)": "E0", "La Liga (Espanha)": "SP1", "Serie A (Itália)": "I1", "Bundesliga (Alemanha)": "D1"}
         temporadas = [{"nome": "2019/2020", "cod": "1920"}, {"nome": "2020/2021", "cod": "2021"}, {"nome": "2021/2022", "cod": "2122"}, {"nome": "2022/2023", "cod": "2223"}, {"nome": "2023/2024", "cod": "2324"}]
 
-        if st.button("🚀 Executar Simulação Histórica de 5 Anos"):
+        if st.button("Executar Simulação Histórica de 5 Anos"):
             barra = st.progress(0)
             dfs = []
             cod = mapa_ligas[liga_escolhida]
@@ -547,30 +555,30 @@ elif st.session_state.modulo_atual == "🧪 Backtest Histórico (Área VIP)":
                     st.plotly_chart(fig_curva, use_container_width=True)
 
                     csv_b = df_res.drop(columns=['Acerto', 'Volume']).to_csv(index=False, sep=";", decimal=",").encode('utf-8-sig')
-                    st.download_button("⬇️ Baixar Auditoria Completa (.CSV / Excel)", data=csv_b, file_name=f"audit_5anos_{cod}.csv", mime="text/csv")
+                    st.download_button("Baixar Auditoria Completa (.CSV / Excel)", data=csv_b, file_name=f"audit_5anos_{cod}.csv", mime="text/csv")
 
 # =========================================================================
 # MÓDULO 4: AGENDA (PRÓXIMOS JOGOS DE HOJE)
 # =========================================================================
-elif st.session_state.modulo_atual == "📅 Agenda (Próximos Jogos)":
-    st.markdown("<h3 style='color:#f8fafc; font-size:1.3rem; font-weight:800;'>📅 Master List: Agenda de Partidas</h3>", unsafe_allow_html=True)
+elif st.session_state.modulo_atual == "## MASTER LIST (AGENDA)":
+    st.markdown("<h3 style='color:#f8fafc; font-size:1.3rem; font-weight:800;'>Master List: Agenda de Partidas</h3>", unsafe_allow_html=True)
     if api_key:
         hoje = datetime.date.today().strftime("%Y-%m-%d")
-        if st.button("📅 Sincronizar Grade Completa do Dia"):
-            res = requests.get(f"https://v3.football.api-sports.io/fixtures?date={hoje}", headers={"x-rapidapi-host": "v3.football.api-sports.io", "x-rapidapi-key": api_key}, timeout=10)
+        if st.button("Sincronizar Grade Completa do Dia"):
+            res = requests.get(f"https://v3.football-data.api-sports.io/fixtures?date={hoje}", headers={"x-rapidapi-host": "v3.football.api-sports.io", "x-rapidapi-key": api_key}, timeout=10)
             jogos = res.json().get("response", [])
             for j in jogos[:25]:
                 st.markdown(f"""
                 <div class="cscore-card">
-                    <span style="color:#38bdf8; font-weight:800;">⏰ {j['fixture']['date'][11:16]} UTC</span> • {j['league']['country']} - {j['league']['name']}: <b>{j['teams']['home']['name']} vs {j['teams']['away']['name']}</b>
+                    <span style="color:#38bdf8; font-weight:800;">{j['fixture']['date'][11:16]} UTC</span> • {j['league']['country']} - {j['league']['name']}: <b>{j['teams']['home']['name']} vs {j['teams']['away']['name']}</b>
                 </div>
                 """, unsafe_allow_html=True)
 
 # =========================================================================
 # MÓDULO 5: CALCULADORA DE VALOR (+EV) & CRITÉRIO DE KELLY
 # =========================================================================
-elif st.session_state.modulo_atual == "🧮 Calculadora de Valor (+EV)":
-    st.markdown("<h3 style='color:#f8fafc; font-size:1.3rem; font-weight:800;'>🧮 Precificação Precisa & Gestão de Risco</h3>", unsafe_allow_html=True)
+elif st.session_state.modulo_atual == "+ CALCULADORA DE VALOR":
+    st.markdown("<h3 style='color:#f8fafc; font-size:1.3rem; font-weight:800;'>Precificação Precisa & Gestão de Risco</h3>", unsafe_allow_html=True)
     c1, c2 = st.columns(2)
     with c1:
         odd = st.number_input("Odd Oferecida no Mercado", min_value=1.01, value=2.00, step=0.05)
@@ -582,15 +590,15 @@ elif st.session_state.modulo_atual == "🧮 Calculadora de Valor (+EV)":
         st.metric("Odd Justa Teórica", f"{(1.0/prob_dec):.2f}")
         st.metric("Margem de Valor (+EV)", f"{ev*100:.1f}%")
         if ev > 0:
-            st.success(f"✅ ENTRADA COM VALOR ESPERADO POSITIVO!\nStake Sugerida (1/4 Kelly): R$ {max(0.0, (((odd-1.0)*prob_dec - (1.0-prob_dec))/(odd-1.0)/4.0)*banca):.2f}")
+            st.success(f"ENTRADA COM VALOR ESPERADO POSITIVO!\nStake Sugerida (1/4 Kelly): R$ {max(0.0, (((odd-1.0)*prob_dec - (1.0-prob_dec))/(odd-1.0)/4.0)*banca):.2f}")
         else:
-            st.error("❌ Entrada sem valor esperado positivo.")
+            st.error("Entrada sem valor esperado positivo.")
 
 # =========================================================================
 # MÓDULO 6: PAINEL ADMIN (LEADS)
 # =========================================================================
-elif st.session_state.modulo_atual == "🔒 Painel Admin (Leads)":
-    st.markdown("<h3 style='color:#f8fafc; font-size:1.3rem; font-weight:800;'>🔒 Backoffice do Administrador - Gestão de Leads</h3>", unsafe_allow_html=True)
+elif st.session_state.modulo_atual == "* BACKOFFICE (ADMIN)":
+    st.markdown("<h3 style='color:#f8fafc; font-size:1.3rem; font-weight:800;'>Backoffice do Administrador - Gestão de Leads</h3>", unsafe_allow_html=True)
     if "admin_logado" not in st.session_state:
         st.session_state.admin_logado = False
 
@@ -598,12 +606,12 @@ elif st.session_state.modulo_atual == "🔒 Painel Admin (Leads)":
         col_login, _ = st.columns([1, 2])
         with col_login:
             senha_digitada = st.text_input("Senha Mestra de Administrador", type="password", placeholder="Digite sua senha...")
-            if st.button("🔓 Acessar Backoffice"):
+            if st.button("Acessar Backoffice"):
                 if senha_digitada == admin_password:
                     st.session_state.admin_logado = True
                     st.rerun()
                 else:
-                    st.error("❌ Senha incorreta.")
+                    st.error("Senha incorreta.")
     else:
         arquivo_leads = "leads_capturados.csv"
         if os.path.exists(arquivo_leads):
@@ -611,8 +619,8 @@ elif st.session_state.modulo_atual == "🔒 Painel Admin (Leads)":
             st.metric("Total de Clientes Capturados", f"{len(df_leads)} leads")
             st.dataframe(df_leads, use_container_width=True, hide_index=True)
             csv_b = df_leads.to_csv(index=False, sep=";", decimal=",").encode('utf-8-sig')
-            st.download_button("⬇️ Baixar Base Completa de Leads (.CSV)", data=csv_b, file_name="leads_alphabet.csv", mime="text/csv")
-            if st.button("🚪 Sair"):
+            st.download_button("Baixar Base Completa de Leads (.CSV)", data=csv_b, file_name="leads_alphabet.csv", mime="text/csv")
+            if st.button("Sair"):
                 st.session_state.admin_logado = False
                 st.rerun()
         else:

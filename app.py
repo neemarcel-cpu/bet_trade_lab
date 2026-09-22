@@ -6,18 +6,37 @@ import os
 import plotly.graph_objects as go
 
 # =========================================================================
-# 1. CONFIGURAÇÃO DA PÁGINA & CSS DARK FINTECH REFINADO
+# 1. CONFIGURAÇÃO DA PÁGINA & CSS: DARK THEME COM BARRA LATERAL À DIREITA
 # =========================================================================
 st.set_page_config(
-    page_title="AlphaBet | Quant Terminal & VIP Analytics",
+    page_title="AlphaBet | Terminal & VIP Intelligence",
     page_icon="⚡",
     layout="wide",
     initial_sidebar_state="expanded"
 )
 
-# Injeção de CSS para corrigir legendas de inputs e caixas de seleção
 st.markdown("""
 <style>
+    /* Inversão da barra lateral para o lado DIREITO da tela */
+    section[data-testid="stSidebar"] {
+        order: 2 !important;
+        border-left: 1px solid #232b3e !important;
+        border-right: none !important;
+        background-color: #10141d !important;
+    }
+    div[data-testid="stSidebarCollapseButton"] {
+        order: 2 !important;
+    }
+    .main .block-container {
+        order: 1 !important;
+    }
+    div.stApp > header {
+        display: block;
+    }
+    div.stApp > div:first-child {
+        flex-direction: row-reverse !important;
+    }
+
     /* Fundo da Aplicação */
     .stApp {
         background-color: #0b0e14;
@@ -25,12 +44,13 @@ st.markdown("""
         font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     }
 
-    /* Correção do Contraste: Labels e Legendas de TODOS os Inputs */
+    /* Correção do Contraste de Labels e Legendas */
     label[data-testid="stWidgetLabel"] p,
     .stSelectbox label p,
     .stNumberInput label p,
     .stSlider label p,
-    .stTextInput label p {
+    .stTextInput label p,
+    .stRadio label p {
         color: #f1f5f9 !important;
         font-size: 0.92rem !important;
         font-weight: 600 !important;
@@ -86,7 +106,31 @@ st.markdown("""
     .metric-negative { color: #ef4444 !important; }
     .metric-accent { color: #38bdf8 !important; }
 
-    /* Card de Jogo Ao Vivo / Próximo */
+    /* Botão Principal de Ação - Alto Contraste */
+    div.stButton > button {
+        background: linear-gradient(135deg, #1d4ed8, #2563eb) !important;
+        color: #ffffff !important;
+        font-size: 0.95rem !important;
+        font-weight: 700 !important;
+        letter-spacing: 0.4px !important;
+        border-radius: 8px !important;
+        border: 1px solid #3b82f6 !important;
+        padding: 10px 24px !important;
+        box-shadow: 0 4px 14px rgba(37, 99, 235, 0.4) !important;
+        transition: all 0.2s ease !important;
+    }
+    div.stButton > button:hover {
+        background: linear-gradient(135deg, #2563eb, #3b82f6) !important;
+        color: #ffffff !important;
+        box-shadow: 0 6px 20px rgba(59, 130, 246, 0.6) !important;
+        transform: translateY(-1px);
+    }
+    div.stButton > button p {
+        color: #ffffff !important;
+        font-weight: 700 !important;
+    }
+
+    /* Cards de Partidas */
     .match-card {
         background: #141923;
         border: 1px solid #232b3e;
@@ -128,7 +172,7 @@ st.markdown("""
         50% { opacity: 0.3; }
     }
 
-    /* Container VIP Gate */
+    /* Caixa de Bloqueio VIP */
     .vip-gate-box {
         background: linear-gradient(180deg, #141923 0%, #0d121c 100%);
         border: 1px solid #f59e0b;
@@ -147,100 +191,124 @@ st.markdown("""
     <div>
         <h1 style="margin: 0; font-size: 1.8rem; display: flex; align-items: center; gap: 10px;">
             <span>⚡ ALPHABET</span> 
-            <span style="font-size: 0.8rem; background: #1e293b; color: #38bdf8; padding: 4px 10px; border-radius: 20px; border: 1px solid #38bdf8;">TERMINAL INTEGRADO</span>
+            <span style="font-size: 0.8rem; background: #1e293b; color: #38bdf8; padding: 4px 10px; border-radius: 20px; border: 1px solid #38bdf8;">TERMINAL QUANT</span>
         </h1>
-        <p style="margin: 4px 0 0 0; color: #94a3b8; font-size: 0.9rem;">Backtest Quantitativo, Scanner In-Play, Agenda e Inteligência Pré-Jogo VIP</p>
+        <p style="margin: 4px 0 0 0; color: #94a3b8; font-size: 0.9rem;">Ecossistema Integrado de Inteligência Pré-Jogo, In-Play e Backtest Avançado</p>
     </div>
     <div style="text-align: right;">
-        <span style="font-size: 0.8rem; color: #10b981; font-weight: 600;">● SISTEMA CONECTADO</span><br>
+        <span style="font-size: 0.8rem; color: #10b981; font-weight: 600;">● SISTEMA ATIVO</span><br>
         <span style="font-size: 0.75rem; color: #64748b;">Feeds: Football-Data & API-Sports</span>
     </div>
 </div>
 """, unsafe_allow_html=True)
 
-# Captura segura da chave de API
+# Captura de API Key
 api_key = st.secrets.get("API_FOOTBALL_KEY", "")
 
-# 5 Abas completas do ecossistema
-aba_vip, aba_live, aba_proximos, aba_backtest, aba_calc = st.tabs([
-    "👑 Análises VIP (Pré-Jogo)",
-    "🔴 Radar In-Play (Ao Vivo)", 
-    "📅 Agenda (Próximos Jogos)", 
-    "🧪 Backtest Multi-Temporadas", 
-    "🧮 Calculadora de Valor (+EV)"
-])
+# Controle de Sessão de Assinante / Lead
+if "lead_desbloqueado" not in st.session_state:
+    st.session_state.lead_desbloqueado = False
 
 # =========================================================================
-# ABA 1: ÁREA VIP & CAPTAÇÃO DE LEADS (NOVIDADE)
+# BARRA LATERAL À DIREITA: NAVEGAÇÃO ENTRE AS ÁREAS DO SITE
 # =========================================================================
-with aba_vip:
-    # Checa se o usuário já desbloqueou o acesso na sessão atual
-    if "lead_desbloqueado" not in st.session_state:
-        st.session_state.lead_desbloqueado = False
+with st.sidebar:
+    st.markdown("<h3 style='font-size:1.15rem; color:#f8fafc; border-bottom: 1px solid #232b3e; padding-bottom: 8px;'>📌 Módulos do Sistema</h3>", unsafe_allow_html=True)
+    
+    modulo_selecionado = st.radio(
+        "Selecione o Ambiente:",
+        [
+            "👑 Análises VIP (Pré-Jogo)",
+            "🧪 Backtest Histórico (Área VIP)",
+            "🔴 Radar In-Play (Ao Vivo)",
+            "📅 Agenda (Próximos Jogos)",
+            "🧮 Calculadora de Valor (+EV)"
+        ]
+    )
 
-    if not st.session_state.lead_desbloqueado:
+    st.markdown("---")
+    if st.session_state.lead_desbloqueado:
+        st.markdown(f"""
+        <div style="background:#064e3b; border:1px solid #10b981; border-radius:8px; padding:10px; text-align:center;">
+            <span style="color:#10b981; font-weight:700; font-size:0.85rem;">STATUS: ASSINANTE VIP</span><br>
+            <span style="color:#d1fae5; font-size:0.75rem;">Acesso Completo Liberado</span>
+        </div>
+        """, unsafe_allow_html=True)
+    else:
         st.markdown("""
-        <div class="vip-gate-box">
-            <span class="vip-badge">ÁREA EXCLUSIVA DE ASSINANTES</span>
-            <h2 style="margin: 12px 0 6px 0; color: #f8fafc; font-size: 1.6rem;">Relatórios de Inteligência & Probabilidades Pré-Jogo</h2>
-            <p style="color: #94a3b8; max-width: 650px; margin: 0 auto 16px auto; font-size: 0.95rem;">
-                Acesse modelos quantitativos de <b>Gols Esperados (xG)</b>, tendências de <b>Ambas Marcam</b>, 
-                estimativa de <b>Linhas Justas</b> e alertas de anomalias para as partidas das próximas rodadas.
-            </p>
-            <p style="color: #f59e0b; font-weight: 600; font-size: 0.9rem;">
-                🔓 Libere o acesso gratuito imediato preenchendo seus dados abaixo:
-            </p>
+        <div style="background:#1e293b; border:1px solid #f59e0b; border-radius:8px; padding:10px; text-align:center;">
+            <span style="color:#f59e0b; font-weight:700; font-size:0.85rem;">STATUS: VISITANTE</span><br>
+            <span style="color:#94a3b8; font-size:0.75rem;">Módulos VIP requerem cadastro</span>
         </div>
         """, unsafe_allow_html=True)
 
-        # Formulário de Captura de Clientes Potenciais
-        col_form_center, _ = st.columns([2, 1])
-        with col_form_center:
-            with st.form("form_captura_lead"):
-                st.markdown("<h4 style='font-size:1.1rem; color:#f8fafc; margin-bottom:8px;'>Cadastre-se para Desbloquear</h4>", unsafe_allow_html=True)
-                nome_cliente = st.text_input("Seu Nome Completo", placeholder="Ex: Marcelo Silva")
-                email_cliente = st.text_input("Seu Melhor E-mail", placeholder="Ex: marcelo@email.com")
-                whatsapp_cliente = st.text_input("Seu WhatsApp com DDD", placeholder="Ex: (11) 98765-4321")
-                
-                enviar_lead = st.form_submit_button("🚀 Desbloquear Análises VIP Gratuitamente")
+# Função Auxiliar para renderizar a Barreira de Cadastro (Paywall de Leads)
+def renderizar_barreira_lead(titulo_area):
+    st.markdown(f"""
+    <div class="vip-gate-box">
+        <span class="vip-badge">ÁREA EXCLUSIVA DE ASSINANTES</span>
+        <h2 style="margin: 12px 0 6px 0; color: #f8fafc; font-size: 1.5rem;">{titulo_area}</h2>
+        <p style="color: #94a3b8; max-width: 650px; margin: 0 auto 16px auto; font-size: 0.95rem;">
+            Desbloqueie acesso imediato ao <b>Simulador de 5 Anos</b>, modelos de <b>Gols Esperados (xG)</b>, 
+            e projeções matemáticas exclusivas preenchendo seus dados abaixo:
+        </p>
+        <p style="color: #f59e0b; font-weight: 600; font-size: 0.9rem;">
+            🔓 Acesso 100% gratuito por tempo limitado:
+        </p>
+    </div>
+    """, unsafe_allow_html=True)
 
-                if enviar_lead:
-                    if nome_cliente.strip() and "@" in email_cliente and whatsapp_cliente.strip():
-                        # Salva o cliente em uma planilha CSV local de leads
-                        arquivo_leads = "leads_capturados.csv"
-                        novo_lead = pd.DataFrame([{
-                            "Data_Cadastro": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-                            "Nome": nome_cliente,
-                            "Email": email_cliente,
-                            "WhatsApp": whatsapp_cliente
-                        }])
+    col_form_center, _ = st.columns([2, 1])
+    with col_form_center:
+        with st.form("form_captura_lead"):
+            st.markdown("<h4 style='font-size:1.05rem; color:#f8fafc;'>Cadastre-se para Acesso Imediato</h4>", unsafe_allow_html=True)
+            nome_cliente = st.text_input("Nome Completo", placeholder="Ex: Roberto Carlos")
+            email_cliente = st.text_input("E-mail Principal", placeholder="Ex: roberto@email.com")
+            whatsapp_cliente = st.text_input("WhatsApp com DDD", placeholder="Ex: (11) 99999-8888")
+            
+            enviar_lead = st.form_submit_button("🚀 Liberar Acesso VIP Agora")
 
-                        if not os.path.exists(arquivo_leads):
-                            novo_lead.to_csv(arquivo_leads, index=False, sep=";", encoding="utf-8-sig")
-                        else:
-                            novo_lead.to_csv(arquivo_leads, mode="a", header=False, index=False, sep=";", encoding="utf-8-sig")
+            if enviar_lead:
+                if nome_cliente.strip() and "@" in email_cliente and whatsapp_cliente.strip():
+                    arquivo_leads = "leads_capturados.csv"
+                    novo_lead = pd.DataFrame([{
+                        "Data_Cadastro": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                        "Nome": nome_cliente,
+                        "Email": email_cliente,
+                        "WhatsApp": whatsapp_cliente
+                    }])
 
-                        st.session_state.lead_desbloqueado = True
-                        st.session_state.nome_usuario = nome_cliente
-                        st.rerun()
+                    if not os.path.exists(arquivo_leads):
+                        novo_lead.to_csv(arquivo_leads, index=False, sep=";", encoding="utf-8-sig")
                     else:
-                        st.error("Por favor, preencha todos os campos com dados válidos para liberar seu acesso.")
+                        novo_lead.to_csv(arquivo_leads, mode="a", header=False, index=False, sep=";", encoding="utf-8-sig")
+
+                    st.session_state.lead_desbloqueado = True
+                    st.session_state.nome_usuario = nome_cliente
+                    st.rerun()
+                else:
+                    st.error("Por favor, preencha todos os campos corretamente para liberar o acesso.")
+
+# =========================================================================
+# MÓDULO 1: ANÁLISES VIP (PRÉ-JOGO)
+# =========================================================================
+if modulo_selecionado == "👑 Análises VIP (Pré-Jogo)":
+    if not st.session_state.lead_desbloqueado:
+        renderizar_barreira_lead("Inteligência e Projeções Pré-Jogo VIP")
     else:
-        # CONTEÚDO EXCLUSIVO DESBLOQUEADO
-        usuario_ativo = st.session_state.get("nome_usuario", "Investidor")
+        usuario_ativo = st.session_state.get("nome_usuario", "Assinante")
         st.markdown(f"""
         <div style="display:flex; justify-content:space-between; align-items:center; background:#141923; padding:12px 18px; border-radius:8px; border:1px solid #10b981; margin-bottom:20px;">
             <div>
-                <span style="color:#10b981; font-weight:700;">● ACESSO VIP ATIVO</span>
+                <span style="color:#10b981; font-weight:700;">● MÓDULO VIP ATIVO</span>
                 <span style="color:#94a3b8; font-size:0.9rem; margin-left:10px;">Bem-vindo(a), <b>{usuario_ativo}</b></span>
             </div>
-            <span class="vip-badge">RELATÓRIOS DO DIA LIBERADOS</span>
+            <span class="vip-badge">RELATÓRIOS LIBERADOS</span>
         </div>
         """, unsafe_allow_html=True)
 
-        st.markdown("<h4 style='color:#cbd5e1; font-size:1.1rem;'>🎯 Projeções de Valor Esperado (+EV) para Hoje</h4>", unsafe_allow_html=True)
+        st.markdown("<h4 style='color:#cbd5e1; font-size:1.1rem;'>🎯 Projeções Quantitativas de Valor (+EV)</h4>", unsafe_allow_html=True)
 
-        # Dados estruturados de análises pré-jogo
         dados_analises_vip = [
             {
                 "Partida": "Arsenal vs Chelsea",
@@ -250,7 +318,7 @@ with aba_vip:
                 "Odd_Justa_Modelo": 1.72,
                 "EV_Estimado": "+13.3%",
                 "xG_Projetado": "3.10 gols",
-                "Recomendacao": "Entrada de Forte Valor Pré-Jogo"
+                "Recomendacao": "Forte Valor Matemático no Over"
             },
             {
                 "Partida": "Real Madrid vs Villarreal",
@@ -260,33 +328,32 @@ with aba_vip:
                 "Odd_Justa_Modelo": 1.48,
                 "EV_Estimado": "+9.4%",
                 "xG_Projetado": "2.65 x 0.85",
-                "Recomendacao": "Cumpre todos os filtros do Backtest de 5 anos"
+                "Recomendacao": "Enquadrado nos parâmetros do Backtest"
             },
             {
                 "Partida": "Bayer Leverkusen vs Borussia Dortmund",
                 "Liga": "Bundesliga",
-                "Mercado": "Ambas Equipes Marcam (BTTS Sim)",
+                "Mercado": "Ambas Equipes Marcam (BTTS)",
                 "Odd_Mercado": 1.68,
                 "Odd_Justa_Modelo": 1.50,
                 "EV_Estimado": "+12.0%",
                 "xG_Projetado": "3.45 gols",
-                "Recomendacao": "Alta tendência estatística ofensiva mútua"
+                "Recomendacao": "Alta probabilidade ofensiva mútua"
             }
         ]
 
         df_vip = pd.DataFrame(dados_analises_vip)
-
         for _, item in df_vip.iterrows():
             st.markdown(f"""
             <div class="match-card" style="border-left: 4px solid #f59e0b;">
                 <div>
                     <span class="vip-badge" style="background:#1e293b; color:#f59e0b; border:1px solid #f59e0b;">{item['Liga']}</span>
-                    <span style="font-size:0.85rem; color:#94a3b8; margin-left:8px;">xG Projetado: <b>{item['xG_Projetado']}</b></span>
+                    <span style="font-size:0.85rem; color:#94a3b8; margin-left:8px;">xG: <b>{item['xG_Projetado']}</b></span>
                     <div style="font-size:1.15rem; font-weight:700; margin-top:6px; color:#f8fafc;">
                         {item['Partida']}
                     </div>
                     <div style="font-size:0.9rem; color:#cbd5e1; margin-top:4px;">
-                        Mercado Sugerido: <b style="color:#38bdf8;">{item['Mercado']}</b> | Odd Disponível: <b>{item['Odd_Mercado']}</b> (Odd Justa: {item['Odd_Justa_Modelo']})
+                        Mercado: <b style="color:#38bdf8;">{item['Mercado']}</b> | Odd Atual: <b>{item['Odd_Mercado']}</b> (Odd Justa: {item['Odd_Justa_Modelo']})
                     </div>
                 </div>
                 <div style="text-align:right;">
@@ -296,44 +363,238 @@ with aba_vip:
             </div>
             """, unsafe_allow_html=True)
 
-        st.caption("🔒 Dados atualizados via modelos matemáticos proprietários. Para dúvidas ou suporte ao assinante, contate nossa mesa quantitativa.")
+# =========================================================================
+# MÓDULO 2: BACKTEST HISTÓRICO (ÁREA VIP EXCLUSIVA)
+# =========================================================================
+elif modulo_selecionado == "🧪 Backtest Histórico (Área VIP)":
+    if not st.session_state.lead_desbloqueado:
+        renderizar_barreira_lead("Simulador Quantitativo de 5 Anos de Backtest")
+    else:
+        st.markdown("<h3 style='color:#f8fafc; font-size:1.3rem;'>🧪 Simulador Histórico de Longo Prazo (5 Anos)</h3>", unsafe_allow_html=True)
+        st.caption("Base consolidada das últimas 5 temporadas completas via Football-Data.co.uk")
+
+        with st.container():
+            st.markdown("<h4 style='color:#cbd5e1; font-size:1.05rem; margin-bottom:12px;'>⚙️ Parâmetros da Simulação</h4>", unsafe_allow_html=True)
+            col_c1, col_c2, col_c3, col_c4 = st.columns(4)
+
+            with col_c1:
+                liga_escolhida = st.selectbox(
+                    "Competição",
+                    ["Premier League (Inglaterra)", "La Liga (Espanha)", "Serie A (Itália)", "Bundesliga (Alemanha)"]
+                )
+            with col_c2:
+                mercado = st.selectbox(
+                    "Mercado Alvo",
+                    ["Over 2.5 Gols (Mais de 2.5)", "Under 2.5 Gols (Menos de 2.5)", "Back Mandante (Casa)", "Back Visitante (Fora)", "Back Empate"]
+                )
+            with col_c3:
+                odd_min = st.number_input("Odd Mínima", value=1.60, step=0.05)
+                odd_max = st.number_input("Odd Máxima", value=2.20, step=0.05)
+            with col_c4:
+                stake_tipo = st.number_input("Stake por Entrada (R$)", min_value=10.0, value=100.0, step=10.0)
+
+        mapa_ligas = {
+            "Premier League (Inglaterra)": "E0",
+            "La Liga (Espanha)": "SP1",
+            "Serie A (Itália)": "I1",
+            "Bundesliga (Alemanha)": "D1"
+        }
+
+        temporadas = [
+            {"nome": "2019/2020", "cod": "1920"},
+            {"nome": "2020/2021", "cod": "2021"},
+            {"nome": "2021/2022", "cod": "2122"},
+            {"nome": "2022/2023", "cod": "2223"},
+            {"nome": "2023/2024", "cod": "2324"}
+        ]
+
+        st.write("")
+        # BOTÃO COM LEGENDA EM ALTO CONTRASTE
+        if st.button("🚀 Executar Simulação Histórica (5 Anos)"):
+            barra_progresso = st.progress(0)
+            lista_dataframes = []
+            cod_liga = mapa_ligas[liga_escolhida]
+
+            for i, temp in enumerate(temporadas):
+                url = f"https://www.football-data.co.uk/mmz4281/{temp['cod']}/{cod_liga}.csv"
+                try:
+                    df_temp = pd.read_csv(url)
+                    colunas_necessarias = ['Date', 'HomeTeam', 'AwayTeam', 'FTHG', 'FTAG', 'FTR']
+                    colunas_odds = ['B365H', 'B365D', 'B365A', 'B365>2.5', 'B365<2.5']
+                    colunas_presentes = [c for c in colunas_necessarias + colunas_odds if c in df_temp.columns]
+                    df_temp = df_temp[colunas_presentes].dropna()
+                    df_temp['Temporada'] = temp['nome']
+                    lista_dataframes.append(df_temp)
+                except Exception:
+                    pass
+                barra_progresso.progress((i + 1) / len(temporadas))
+
+            barra_progresso.empty()
+
+            if lista_dataframes:
+                base_completa = pd.concat(lista_dataframes, ignore_index=True)
+                registros = []
+                lucro_acumulado = 0.0
+                picos_banca = 0.0
+                drawdown_maximo = 0.0
+                historico_banca = [0.0]
+
+                for _, row in base_completa.iterrows():
+                    if mercado == "Over 2.5 Gols (Mais de 2.5)":
+                        if 'B365>2.5' not in row: continue
+                        odd_jogo = row['B365>2.5']
+                        ganhou = (row['FTHG'] + row['FTAG']) > 2.5
+                    elif mercado == "Under 2.5 Gols (Menos de 2.5)":
+                        if 'B365<2.5' not in row: continue
+                        odd_jogo = row['B365<2.5']
+                        ganhou = (row['FTHG'] + row['FTAG']) < 2.5
+                    elif mercado == "Back Mandante (Casa)":
+                        odd_jogo = row.get('B365H', 0)
+                        ganhou = (row['FTR'] == 'H')
+                    elif mercado == "Back Visitante (Fora)":
+                        odd_jogo = row.get('B365A', 0)
+                        ganhou = (row['FTR'] == 'A')
+                    else:
+                        odd_jogo = row.get('B365D', 0)
+                        ganhou = (row['FTR'] == 'D')
+
+                    if odd_min <= odd_jogo <= odd_max:
+                        if ganhou:
+                            resultado_financeiro = (odd_jogo - 1.0) * stake_tipo
+                            acerto_binario = 1
+                            status = "GREEN"
+                        else:
+                            resultado_financeiro = -stake_tipo
+                            acerto_binario = 0
+                            status = "RED"
+
+                        lucro_acumulado += resultado_financeiro
+                        historico_banca.append(lucro_acumulado)
+
+                        if lucro_acumulado > picos_banca:
+                            picos_banca = lucro_acumulado
+                        queda_atual = picos_banca - lucro_acumulado
+                        if queda_atual > drawdown_maximo:
+                            drawdown_maximo = queda_atual
+
+                        registros.append({
+                            "Data": row['Date'],
+                            "Temporada": row['Temporada'],
+                            "Partida": f"{row['HomeTeam']} vs {row['AwayTeam']}",
+                            "Placar": f"{int(row['FTHG'])}x{int(row['FTAG'])}",
+                            "Odd": odd_jogo,
+                            "Status": status,
+                            "Resultado_R$": round(resultado_financeiro, 2),
+                            "Acerto": acerto_binario,
+                            "Volume": stake_tipo
+                        })
+
+                if registros:
+                    df_relatorio = pd.DataFrame(registros)
+                    total_jogos = len(df_relatorio)
+                    total_acertos = df_relatorio['Acerto'].sum()
+                    win_rate = (total_acertos / total_jogos) * 100
+                    total_investido = total_jogos * stake_tipo
+                    roi = (lucro_acumulado / total_investido) * 100
+
+                    st.markdown("<h4 style='color:#cbd5e1; font-size:1.1rem; margin-top:20px;'>📊 Performance da Estratégia (5 Anos)</h4>", unsafe_allow_html=True)
+                    m1, m2, m3, m4, m5 = st.columns(5)
+
+                    lucro_classe = "metric-positive" if lucro_acumulado >= 0 else "metric-negative"
+                    lucro_sinal = "+" if lucro_acumulado >= 0 else ""
+
+                    with m1:
+                        st.markdown(f'<div class="metric-card"><div class="metric-label">Amostra</div><div class="metric-value metric-accent">{total_jogos} jogos</div></div>', unsafe_allow_html=True)
+                    with m2:
+                        st.markdown(f'<div class="metric-card"><div class="metric-label">Win Rate</div><div class="metric-value">{win_rate:.1f}%</div></div>', unsafe_allow_html=True)
+                    with m3:
+                        st.markdown(f'<div class="metric-card"><div class="metric-label">Lucro Líquido</div><div class="metric-value {lucro_classe}">{lucro_sinal}R$ {lucro_acumulado:,.2f}</div></div>', unsafe_allow_html=True)
+                    with m4:
+                        st.markdown(f'<div class="metric-card"><div class="metric-label">ROI Global</div><div class="metric-value {lucro_classe}">{lucro_sinal}{roi:.2f}%</div></div>', unsafe_allow_html=True)
+                    with m5:
+                        st.markdown(f'<div class="metric-card"><div class="metric-label">Max Drawdown</div><div class="metric-value metric-negative">-R$ {drawdown_maximo:,.2f}</div></div>', unsafe_allow_html=True)
+
+                    st.write("")
+                    col_g1, col_g2 = st.columns([3, 2])
+
+                    with col_g1:
+                        fig_curva = go.Figure()
+                        fig_curva.add_trace(go.Scatter(
+                            x=list(range(len(historico_banca))),
+                            y=historico_banca,
+                            mode='lines',
+                            line=dict(color='#38bdf8', width=2.5),
+                            fill='tozeroy',
+                            fillcolor='rgba(56, 189, 248, 0.08)'
+                        ))
+                        fig_curva.update_layout(
+                            title="<b>Curva de Patrimônio Líquido (Equity Curve)</b>",
+                            paper_bgcolor='#0b0e14',
+                            plot_bgcolor='#141923',
+                            font=dict(color='#94a3b8'),
+                            xaxis=dict(showgrid=True, gridcolor='#232b3e'),
+                            yaxis=dict(showgrid=True, gridcolor='#232b3e'),
+                            margin=dict(l=20, r=20, t=40, b=20),
+                            height=350
+                        )
+                        st.plotly_chart(fig_curva, use_container_width=True)
+
+                    with col_g2:
+                        df_anual = df_relatorio.groupby('Temporada')['Resultado_R$'].sum().reset_index()
+                        cores_barras = ['#10b981' if v >= 0 else '#ef4444' for v in df_anual['Resultado_R$']]
+                        fig_barras = go.Figure(go.Bar(
+                            x=df_anual['Temporada'],
+                            y=df_anual['Resultado_R$'],
+                            marker_color=cores_barras,
+                            text=[f"R$ {v:,.0f}" for v in df_anual['Resultado_R$']],
+                            textposition='auto',
+                        ))
+                        fig_barras.update_layout(
+                            title="<b>Resultado por Temporada</b>",
+                            paper_bgcolor='#0b0e14',
+                            plot_bgcolor='#141923',
+                            font=dict(color='#94a3b8'),
+                            xaxis=dict(gridcolor='#232b3e'),
+                            yaxis=dict(gridcolor='#232b3e'),
+                            margin=dict(l=20, r=20, t=40, b=20),
+                            height=350
+                        )
+                        st.plotly_chart(fig_barras, use_container_width=True)
+
+                    csv_bytes = df_relatorio.drop(columns=['Acerto', 'Volume']).to_csv(index=False, sep=";", decimal=",").encode('utf-8-sig')
+                    st.download_button(
+                        label="⬇️ Exportar Registro Completo (.CSV / Excel)",
+                        data=csv_bytes,
+                        file_name=f"audit_{cod_liga}_{mercado.replace(' ', '_')}.csv",
+                        mime="text/csv"
+                    )
 
 # =========================================================================
-# ABA 2: RADAR DE JOGOS AO VIVO (IN-PLAY)
+# MÓDULO 3: RADAR IN-PLAY (AO VIVO)
 # =========================================================================
-with aba_live:
-    st.markdown("<h4 style='color:#cbd5e1; font-size:1.1rem;'>Monitoramento em Tempo Real de Partidas</h4>", unsafe_allow_html=True)
-    st.caption("Identifique jogos no 2º tempo com placar parelho para entradas dinâmicas em Back/Lay.")
+elif modulo_selecionado == "🔴 Radar In-Play (Ao Vivo)":
+    st.markdown("<h3 style='color:#f8fafc; font-size:1.3rem;'>🔴 Radar In-Play (Jogos em Tempo Real)</h3>", unsafe_allow_html=True)
+    st.caption("Partidas com bola rolando no mundo via API-Football.")
 
     if not api_key:
-        st.warning("⚠️ Chave da API-Football não configurada nos Secrets do Streamlit Cloud.")
-        st.info("Insira sua chave gratuita nas configurações do Streamlit Cloud sob o nome **API_FOOTBALL_KEY**.")
+        st.warning("⚠️ Insira sua chave gratuita da API-Football nas configurações do Streamlit Cloud.")
     else:
-        col_btn, _ = st.columns([1, 4])
-        with col_btn:
-            atualizar_live = st.button("🔄 Atualizar Jogos Ao Vivo")
-
-        if atualizar_live:
-            with st.spinner("Conectando aos servidores globais e buscando jogos com bola rolando..."):
-                headers = {
-                    "x-rapidapi-host": "v3.football.api-sports.io",
-                    "x-rapidapi-key": api_key
-                }
+        if st.button("🔄 Atualizar Partidas Ao Vivo"):
+            with st.spinner("Buscando jogos com bola rolando..."):
+                headers = {"x-rapidapi-host": "v3.football.api-sports.io", "x-rapidapi-key": api_key}
                 try:
-                    url = "https://v3.football.api-sports.io/fixtures?live=all"
-                    res = requests.get(url, headers=headers, timeout=10)
+                    res = requests.get("https://v3.football.api-sports.io/fixtures?live=all", headers=headers, timeout=10)
                     dados_live = res.json().get("response", [])
-
                     if not dados_live:
-                        st.info("Nenhuma partida ao vivo no momento ou cota diária atingida.")
+                        st.info("Nenhuma partida ao vivo no momento.")
                     else:
-                        st.success(f"{len(dados_live)} partidas encontradas ao vivo no mundo agora!")
+                        st.success(f"{len(dados_live)} partidas encontradas ao vivo!")
                         for jogo in dados_live:
                             minuto = jogo["fixture"]["status"]["elapsed"]
                             mandante = jogo["teams"]["home"]["name"]
                             visitante = jogo["teams"]["away"]["name"]
-                            gols_m = jogo["goals"]["home"] if jogo["goals"]["home"] is not None else 0
-                            gols_v = jogo["goals"]["away"] if jogo["goals"]["away"] is not None else 0
+                            gols_m = jogo["goals"]["home"] or 0
+                            gols_v = jogo["goals"]["away"] or 0
                             liga = jogo["league"]["name"]
                             pais = jogo["league"]["country"]
 
@@ -347,40 +608,34 @@ with aba_live:
                                     </div>
                                 </div>
                                 <div style="text-align:right;">
-                                    <span style="font-size:0.85rem; color:#94a3b8;">Status da Rodada</span><br>
                                     <span style="font-size:0.95rem; font-weight:600; color:#10b981;">Em Andamento</span>
                                 </div>
                             </div>
                             """, unsafe_allow_html=True)
                 except Exception as e:
-                    st.error(f"Erro ao consultar a API de jogos ao vivo: {e}")
+                    st.error(f"Erro ao consultar API: {e}")
 
 # =========================================================================
-# ABA 3: AGENDA (PRÓXIMOS JOGOS DE HOJE)
+# MÓDULO 4: AGENDA (PRÓXIMOS JOGOS DE HOJE)
 # =========================================================================
-with aba_proximos:
-    st.markdown("<h4 style='color:#cbd5e1; font-size:1.1rem;'>Agenda de Confrontos do Dia</h4>", unsafe_allow_html=True)
-    st.caption("Filtre as partidas programadas para as próximas horas para planejar análises pré-jogo.")
+elif modulo_selecionado == "📅 Agenda (Próximos Jogos)":
+    st.markdown("<h3 style='color:#f8fafc; font-size:1.3rem;'>📅 Agenda de Jogos do Dia</h3>", unsafe_allow_html=True)
+    st.caption("Grade de partidas programadas para as próximas horas.")
 
     if not api_key:
-        st.warning("⚠️ Insira sua API_FOOTBALL_KEY para carregar os confrontos do dia.")
+        st.warning("⚠️ Insira sua chave da API-Football nas configurações do Streamlit Cloud.")
     else:
         hoje = datetime.date.today().strftime("%Y-%m-%d")
-        if st.button("📅 Carregar Grade de Jogos de Hoje"):
-            with st.spinner("Buscando agenda de partidas para hoje..."):
-                headers = {
-                    "x-rapidapi-host": "v3.football.api-sports.io",
-                    "x-rapidapi-key": api_key
-                }
+        if st.button("📅 Carregar Grade do Dia"):
+            with st.spinner("Buscando agenda..."):
+                headers = {"x-rapidapi-host": "v3.football.api-sports.io", "x-rapidapi-key": api_key}
                 try:
-                    url = f"https://v3.football.api-sports.io/fixtures?date={hoje}"
-                    res = requests.get(url, headers=headers, timeout=10)
+                    res = requests.get(f"https://v3.football.api-sports.io/fixtures?date={hoje}", headers=headers, timeout=10)
                     jogos_hoje = res.json().get("response", [])
-
                     if not jogos_hoje:
-                        st.info("Nenhuma partida agendada encontrada para a data de hoje.")
+                        st.info("Nenhuma partida catalogada para hoje.")
                     else:
-                        st.success(f"{len(jogos_hoje)} partidas catalogadas para o dia de hoje!")
+                        st.success(f"{len(jogos_hoje)} partidas encontradas para hoje!")
                         for jogo in jogos_hoje[:25]:
                             horario_utc = jogo["fixture"]["date"][11:16]
                             mandante = jogo["teams"]["home"]["name"]
@@ -403,212 +658,13 @@ with aba_proximos:
                             </div>
                             """, unsafe_allow_html=True)
                 except Exception as e:
-                    st.error(f"Erro ao buscar os próximos jogos: {e}")
+                    st.error(f"Erro ao buscar agenda: {e}")
 
 # =========================================================================
-# ABA 4: BACKTEST MULTI-TEMPORADAS (5 ANOS)
+# MÓDULO 5: CALCULADORA DE VALOR (+EV) & CRITÉRIO DE KELLY
 # =========================================================================
-with aba_backtest:
-    with st.container():
-        st.markdown("<h4 style='color:#cbd5e1; font-size:1.1rem; margin-bottom:12px;'>⚙️ Parâmetros do Teste de Estresse Histórico</h4>", unsafe_allow_html=True)
-        col_c1, col_c2, col_c3, col_c4 = st.columns(4)
-
-        with col_c1:
-            liga_escolhida = st.selectbox(
-                "Competição",
-                ["Premier League (Inglaterra)", "La Liga (Espanha)", "Serie A (Itália)", "Bundesliga (Alemanha)"]
-            )
-        with col_c2:
-            mercado = st.selectbox(
-                "Mercado Alvo",
-                ["Over 2.5 Gols (Mais de 2.5)", "Under 2.5 Gols (Menos de 2.5)", "Back Mandante (Casa)", "Back Visitante (Fora)", "Back Empate"]
-            )
-        with col_c3:
-            odd_min = st.number_input("Odd Mínima", value=1.60, step=0.05)
-            odd_max = st.number_input("Odd Máxima", value=2.20, step=0.05)
-        with col_c4:
-            stake_tipo = st.number_input("Stake por Entrada (R$)", min_value=10.0, value=100.0, step=10.0)
-
-    mapa_ligas = {
-        "Premier League (Inglaterra)": "E0",
-        "La Liga (Espanha)": "SP1",
-        "Serie A (Itália)": "I1",
-        "Bundesliga (Alemanha)": "D1"
-    }
-
-    temporadas = [
-        {"nome": "2019/2020", "cod": "1920"},
-        {"nome": "2020/2021", "cod": "2021"},
-        {"nome": "2021/2022", "cod": "2122"},
-        {"nome": "2022/2023", "cod": "2223"},
-        {"nome": "2023/2024", "cod": "2324"}
-    ]
-
-    st.write("")
-    if st.button("🚀 Executar Simulação Histórica (5 Anos)"):
-        barra_progresso = st.progress(0)
-        lista_dataframes = []
-        cod_liga = mapa_ligas[liga_escolhida]
-
-        for i, temp in enumerate(temporadas):
-            url = f"https://www.football-data.co.uk/mmz4281/{temp['cod']}/{cod_liga}.csv"
-            try:
-                df_temp = pd.read_csv(url)
-                colunas_necessarias = ['Date', 'HomeTeam', 'AwayTeam', 'FTHG', 'FTAG', 'FTR']
-                colunas_odds = ['B365H', 'B365D', 'B365A', 'B365>2.5', 'B365<2.5']
-                colunas_presentes = [c for c in colunas_necessarias + colunas_odds if c in df_temp.columns]
-                df_temp = df_temp[colunas_presentes].dropna()
-                df_temp['Temporada'] = temp['nome']
-                lista_dataframes.append(df_temp)
-            except Exception:
-                pass
-            barra_progresso.progress((i + 1) / len(temporadas))
-
-        barra_progresso.empty()
-
-        if lista_dataframes:
-            base_completa = pd.concat(lista_dataframes, ignore_index=True)
-            registros = []
-            lucro_acumulado = 0.0
-            picos_banca = 0.0
-            drawdown_maximo = 0.0
-            historico_banca = [0.0]
-
-            for _, row in base_completa.iterrows():
-                if mercado == "Over 2.5 Gols (Mais de 2.5)":
-                    if 'B365>2.5' not in row: continue
-                    odd_jogo = row['B365>2.5']
-                    ganhou = (row['FTHG'] + row['FTAG']) > 2.5
-                elif mercado == "Under 2.5 Gols (Menos de 2.5)":
-                    if 'B365<2.5' not in row: continue
-                    odd_jogo = row['B365<2.5']
-                    ganhou = (row['FTHG'] + row['FTAG']) < 2.5
-                elif mercado == "Back Mandante (Casa)":
-                    odd_jogo = row.get('B365H', 0)
-                    ganhou = (row['FTR'] == 'H')
-                elif mercado == "Back Visitante (Fora)":
-                    odd_jogo = row.get('B365A', 0)
-                    ganhou = (row['FTR'] == 'A')
-                else:
-                    odd_jogo = row.get('B365D', 0)
-                    ganhou = (row['FTR'] == 'D')
-
-                if odd_min <= odd_jogo <= odd_max:
-                    if ganhou:
-                        resultado_financeiro = (odd_jogo - 1.0) * stake_tipo
-                        acerto_binario = 1
-                        status = "GREEN"
-                    else:
-                        resultado_financeiro = -stake_tipo
-                        acerto_binario = 0
-                        status = "RED"
-
-                    lucro_acumulado += resultado_financeiro
-                    historico_banca.append(lucro_acumulado)
-
-                    if lucro_acumulado > picos_banca:
-                        picos_banca = lucro_acumulado
-                    queda_atual = picos_banca - lucro_acumulado
-                    if queda_atual > drawdown_maximo:
-                        drawdown_maximo = queda_atual
-
-                    registros.append({
-                        "Data": row['Date'],
-                        "Temporada": row['Temporada'],
-                        "Partida": f"{row['HomeTeam']} vs {row['AwayTeam']}",
-                        "Placar": f"{int(row['FTHG'])}x{int(row['FTAG'])}",
-                        "Odd": odd_jogo,
-                        "Status": status,
-                        "Resultado_R$": round(resultado_financeiro, 2),
-                        "Acerto": acerto_binario,
-                        "Volume": stake_tipo
-                    })
-
-            if registros:
-                df_relatorio = pd.DataFrame(registros)
-                total_jogos = len(df_relatorio)
-                total_acertos = df_relatorio['Acerto'].sum()
-                win_rate = (total_acertos / total_jogos) * 100
-                total_investido = total_jogos * stake_tipo
-                roi = (lucro_acumulado / total_investido) * 100
-
-                st.markdown("<h4 style='color:#cbd5e1; font-size:1.1rem; margin-top:20px;'>📊 Performance Executiva (5 Anos)</h4>", unsafe_allow_html=True)
-                m1, m2, m3, m4, m5 = st.columns(5)
-
-                lucro_classe = "metric-positive" if lucro_acumulado >= 0 else "metric-negative"
-                lucro_sinal = "+" if lucro_acumulado >= 0 else ""
-
-                with m1:
-                    st.markdown(f'<div class="metric-card"><div class="metric-label">Amostra</div><div class="metric-value metric-accent">{total_jogos} jogos</div></div>', unsafe_allow_html=True)
-                with m2:
-                    st.markdown(f'<div class="metric-card"><div class="metric-label">Win Rate</div><div class="metric-value">{win_rate:.1f}%</div></div>', unsafe_allow_html=True)
-                with m3:
-                    st.markdown(f'<div class="metric-card"><div class="metric-label">Lucro Líquido</div><div class="metric-value {lucro_classe}">{lucro_sinal}R$ {lucro_acumulado:,.2f}</div></div>', unsafe_allow_html=True)
-                with m4:
-                    st.markdown(f'<div class="metric-card"><div class="metric-label">ROI Global</div><div class="metric-value {lucro_classe}">{lucro_sinal}{roi:.2f}%</div></div>', unsafe_allow_html=True)
-                with m5:
-                    st.markdown(f'<div class="metric-card"><div class="metric-label">Max Drawdown</div><div class="metric-value metric-negative">-R$ {drawdown_maximo:,.2f}</div></div>', unsafe_allow_html=True)
-
-                st.write("")
-                col_g1, col_g2 = st.columns([3, 2])
-
-                with col_g1:
-                    fig_curva = go.Figure()
-                    fig_curva.add_trace(go.Scatter(
-                        x=list(range(len(historico_banca))),
-                        y=historico_banca,
-                        mode='lines',
-                        line=dict(color='#38bdf8', width=2.5),
-                        fill='tozeroy',
-                        fillcolor='rgba(56, 189, 248, 0.08)'
-                    ))
-                    fig_curva.update_layout(
-                        title="<b>Curva de Patrimônio Líquido (Equity Curve)</b>",
-                        paper_bgcolor='#0b0e14',
-                        plot_bgcolor='#141923',
-                        font=dict(color='#94a3b8'),
-                        xaxis=dict(showgrid=True, gridcolor='#232b3e'),
-                        yaxis=dict(showgrid=True, gridcolor='#232b3e'),
-                        margin=dict(l=20, r=20, t=40, b=20),
-                        height=350
-                    )
-                    st.plotly_chart(fig_curva, use_container_width=True)
-
-                with col_g2:
-                    df_anual = df_relatorio.groupby('Temporada')['Resultado_R$'].sum().reset_index()
-                    cores_barras = ['#10b981' if v >= 0 else '#ef4444' for v in df_anual['Resultado_R$']]
-                    fig_barras = go.Figure(go.Bar(
-                        x=df_anual['Temporada'],
-                        y=df_anual['Resultado_R$'],
-                        marker_color=cores_barras,
-                        text=[f"R$ {v:,.0f}" for v in df_anual['Resultado_R$']],
-                        textposition='auto',
-                    ))
-                    fig_barras.update_layout(
-                        title="<b>Resultado por Temporada</b>",
-                        paper_bgcolor='#0b0e14',
-                        plot_bgcolor='#141923',
-                        font=dict(color='#94a3b8'),
-                        xaxis=dict(gridcolor='#232b3e'),
-                        yaxis=dict(gridcolor='#232b3e'),
-                        margin=dict(l=20, r=20, t=40, b=20),
-                        height=350
-                    )
-                    st.plotly_chart(fig_barras, use_container_width=True)
-
-                csv_bytes = df_relatorio.drop(columns=['Acerto', 'Volume']).to_csv(index=False, sep=";", decimal=",").encode('utf-8-sig')
-                st.download_button(
-                    label="⬇️ Exportar Registro Completo (.CSV / Excel)",
-                    data=csv_bytes,
-                    file_name=f"audit_{cod_liga}_{mercado.replace(' ', '_')}.csv",
-                    mime="text/csv"
-                )
-
-# =========================================================================
-# ABA 5: CALCULADORA DE VALOR (+EV) & KELLY
-# =========================================================================
-with aba_calc:
-    st.markdown("<h4 style='color:#cbd5e1; font-size:1.1rem; margin-bottom:12px;'>Precificação Precisa & Dimensionamento de Posição</h4>", unsafe_allow_html=True)
+elif modulo_selecionado == "🧮 Calculadora de Valor (+EV)":
+    st.markdown("<h3 style='color:#f8fafc; font-size:1.3rem;'>🧮 Precificação Precisa & Gestão de Risco</h3>", unsafe_allow_html=True)
     c_in1, c_in2 = st.columns(2)
 
     with c_in1:
@@ -636,4 +692,4 @@ with aba_calc:
             stake_sugerida = max(0.0, (kelly_full / 4.0) * banca_atual)
             st.success(f"✅ **ENTRADA DE VALOR IDENTIFICADA!**\nStake Sugerida (1/4 Kelly): **R$ {stake_sugerida:.2f}** ({((stake_sugerida/banca_atual)*100):.2f}% da banca)")
         else:
-            st.error("❌ **ENTRADA SEM VALOR MATEMÁTICO.** Expectativa matemática desfavorável a longo prazo.")
+            st.error("❌ **ENTRADA SEM VALOR MATEMÁTICO.** Expectativa desfavorável a longo prazo.")

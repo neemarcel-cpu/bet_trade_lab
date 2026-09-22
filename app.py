@@ -607,7 +607,7 @@ elif st.session_state.modulo_atual == "📅 Agenda (Próximos Jogos)":
     if api_key:
         hoje = datetime.date.today().strftime("%Y-%m-%d")
         if st.button("📅 Carregar Grade do Dia"):
-    res = requests.get(f"https://v3.football.api-sports.io/fixtures?date={hoje}", headers={"x-rapidapi-host": "v3.football.api-sports.io", "x-rapidapi-key": api_key}, timeout=10)
+            res = requests.get(f"https://v3.football.api-sports.io/fixtures?date={hoje}", headers={"x-rapidapi-host": "v3.football.api-sports.io", "x-rapidapi-key": api_key}, timeout=10)
             jogos = res.json().get("response", [])
             for j in jogos[:25]:
                 st.markdown(f"""

@@ -6,7 +6,7 @@ import os
 import plotly.graph_objects as go
 
 # =========================================================================
-# 1. CONFIGURAÇÃO DA PÁGINA & CSS DESIGN SYSTEM: CONTRASTE & CORES VIVAS
+# 1. CONFIGURAÇÃO DA PÁGINA & CSS DESIGN SYSTEM: SIMETRIA RIGOROSA E CONTRASTE
 # =========================================================================
 st.set_page_config(
     page_title="AlphaBet | Quant Terminal & VIP Engine",
@@ -57,9 +57,10 @@ st.markdown("""
     }
 
     /* =========================================================
-       BOTÕES DA BARRA LATERAL: SIMETRIA & CONTRASTE DINÂMICO
+       BOTÕES DA BARRA LATERAL: PADRONIZAÇÃO E SIMETRIA ABSOLUTA
        ========================================================= */
-    section[data-testid="stSidebar"] div[data-testid="stVerticalBlock"] > div.stButton {
+    section[data-testid="stSidebar"] div[data-testid="stVerticalBlock"] > div.stButton,
+    section[data-testid="stSidebar"] div.stButton {
         width: 100% !important;
         margin: 0 !important;
         padding: 0 !important;
@@ -68,14 +69,14 @@ st.markdown("""
     section[data-testid="stSidebar"] div.stButton > button {
         box-sizing: border-box !important;
         width: 100% !important;
-        height: 46px !important;
-        min-height: 46px !important;
-        max-height: 46px !important;
+        height: 48px !important;
+        min-height: 48px !important;
+        max-height: 48px !important;
         background-color: #0f172a !important;
-        color: #e2e8f0 !important;
+        color: #f8fafc !important;
         border: 1px solid #1e293b !important;
         border-radius: 8px !important;
-        padding: 0 14px !important;
+        padding: 0 16px !important;
         display: flex !important;
         align-items: center !important;
         justify-content: flex-start !important;
@@ -95,9 +96,12 @@ st.markdown("""
         margin: 0 !important;
         padding: 0 !important;
         line-height: 1 !important;
+        white-space: nowrap !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
     }
 
-    /* Submenu VIP indentado com borda dourada */
+    /* Submenu VIP com Indentação Simétrica */
     .submenu-card {
         background: rgba(245, 158, 11, 0.05);
         border-left: 3px solid #f59e0b;
@@ -105,11 +109,17 @@ st.markdown("""
         margin: -2px 0 8px 0;
         border-radius: 0 8px 8px 0;
     }
+    .submenu-card div.stButton > button {
+        height: 44px !important;
+        min-height: 44px !important;
+        max-height: 44px !important;
+        background-color: #141c2e !important;
+        border-color: #232f48 !important;
+    }
 
     /* =========================================================
-       CORREÇÃO DE CONTRASTE NOS BOTÕES PRINCIPAIS DE AÇÃO
+       BOTÕES PRINCIPAIS DE AÇÃO (ALTO CONTRASTE)
        ========================================================= */
-    /* Botões de Ação na Tela Principal (Varredura e Executar Backtest) */
     .main div.stButton > button {
         background: linear-gradient(135deg, #1d4ed8 0%, #2563eb 100%) !important;
         color: #ffffff !important;
@@ -133,7 +143,7 @@ st.markdown("""
         letter-spacing: 0.5px !important;
     }
 
-    /* Botão de Inscrição VIP (Fundo Claro com Fonte Escura de Alto Contraste) */
+    /* Botão de Inscrição VIP (Fundo Claro com Fonte Escura) */
     div[data-testid="stForm"] div.stButton > button {
         background: #ffffff !important;
         color: #020617 !important;
@@ -207,7 +217,7 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-# Cabeçalho Principal com Tipografia Viva
+# Cabeçalho Principal
 st.markdown("""
 <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #1e293b; padding-bottom: 16px; margin-bottom: 24px;">
     <div>
@@ -243,21 +253,22 @@ if "submenu_vip_aberto" not in st.session_state:
     st.session_state.submenu_vip_aberto = True
 
 # =========================================================================
-# BARRA LATERAL À DIREITA COM SUBMENU VIP RETRÁTIL (🔑)
+# BARRA LATERAL À DIREITA COM BOTÕES SIMÉTRICOS E RÓTULOS REFINADOS
 # =========================================================================
 with st.sidebar:
     st.markdown("<div style='font-size:0.75rem; text-transform:uppercase; color:#94a3b8; font-weight:800; letter-spacing:0.8px; margin-bottom:12px;'>NAVEGAÇÃO PRINCIPAL</div>", unsafe_allow_html=True)
 
-    if st.button("Radar In-Play (Ao Vivo)"):
+    # 1. Botão do Radar sem a palavra "ao vivo"
+    if st.button("Radar In-Play"):
         st.session_state.modulo_atual = "Radar In-Play"
 
-    # BOTÃO MESTRE DA ÁREA VIP COM EMOJI DE CHAVE (🔑)
+    # 2. Botão mestre da Área VIP com Chave (🔑)
     icone_seta = "▼" if st.session_state.submenu_vip_aberto else "▶"
     if st.button(f"🔑 ÁREA VIP  {icone_seta}"):
         st.session_state.submenu_vip_aberto = not st.session_state.submenu_vip_aberto
         st.rerun()
 
-    # SUBMENU RETRÁTIL COM AS ÁREAS REQUISITADAS
+    # Submenu interno sem repetição do nome VIP
     if st.session_state.submenu_vip_aberto:
         st.markdown('<div class="submenu-card">', unsafe_allow_html=True)
         if st.button("↳ Backtest 5 Anos"):
@@ -266,11 +277,13 @@ with st.sidebar:
             st.session_state.modulo_atual = "Análise Pré-Jogo"
         st.markdown('</div>', unsafe_allow_html=True)
 
-    if st.button("Master List (Grade de Jogos)"):
-        st.session_state.modulo_atual = "Master List"
+    # 3. Botão sem a palavra "master list"
+    if st.button("Grade de Jogos"):
+        st.session_state.modulo_atual = "Grade de Jogos"
 
-    if st.button("Calculadora de Valor (+EV)"):
-        st.session_state.modulo_atual = "Calculadora +EV"
+    # 4. Botão da Calculadora renomeado para EV+
+    if st.button("Calculadora EV+"):
+        st.session_state.modulo_atual = "Calculadora EV+"
 
     st.markdown("<div style='border-top: 1px solid #1e293b; margin: 14px 0 10px 0;'></div>", unsafe_allow_html=True)
     if st.button("Backoffice Admin"):
@@ -304,7 +317,6 @@ def renderizar_barreira_lead(titulo_area):
             email_cliente = st.text_input("Seu E-mail Principal", placeholder="roberto@email.com")
             whatsapp_cliente = st.text_input("WhatsApp com DDD", placeholder="(11) 98888-7777")
             
-            # BOTÃO COM FONTE ESCURA E CONTRASTE ABSOLUTO NO FUNDO BRANCO
             enviar_lead = st.form_submit_button("DESBLOQUEAR ACESSO VIP AGORA")
 
             if enviar_lead:
@@ -329,7 +341,7 @@ def renderizar_barreira_lead(titulo_area):
                     st.error("Por favor, preencha todos os campos corretamente para liberar seu acesso.")
 
 # =========================================================================
-# MÓDULO 1: RADAR IN-PLAY COM ODDS LIVE & DETECTOR DE DISTORÇÕES
+# MÓDULO 1: RADAR IN-PLAY
 # =========================================================================
 if st.session_state.modulo_atual == "Radar In-Play":
     st.markdown("<h3 style='color:#ffffff; font-size:1.35rem; font-weight:900;'>Radar In-Play de Pressão & Live Odds (Betfair & Pinnacle)</h3>", unsafe_allow_html=True)
@@ -344,7 +356,6 @@ if st.session_state.modulo_atual == "Radar In-Play":
     if not api_key:
         st.warning("Insira sua chave gratuita da API-Football nas configurações do Streamlit Cloud.")
     else:
-        # BOTÃO DO RADAR COM CONTRASTE MÁXIMO REFORÇADO
         if st.button("EXECUTAR VARREDURA DE PARTIDAS & CALCULAR DISTORÇÕES"):
             with st.spinner("Sincronizando feeds mundiais, calculando IPM e mapeando liquidez Betfair/Pinnacle..."):
                 headers = {"x-rapidapi-host": "v3.football.api-sports.io", "x-rapidapi-key": api_key}
@@ -466,7 +477,7 @@ elif st.session_state.modulo_atual == "Análise Pré-Jogo":
         </div>
         """, unsafe_allow_html=True)
 
-        st.markdown("<h4 style='color:#ffffff; font-size:1.2rem; font-weight:900;'>Master List de Valor Esperado (+EV) para Hoje</h4>", unsafe_allow_html=True)
+        st.markdown("<h4 style='color:#ffffff; font-size:1.2rem; font-weight:900;'>Oportunidades de Valor Esperado (+EV) para Hoje</h4>", unsafe_allow_html=True)
 
         dados_analises_vip = [
             {"Partida": "Arsenal vs Chelsea", "Liga": "Premier League", "Mercado": "Over 2.5 Gols", "Odd_Mercado": 1.95, "Odd_Justa_Modelo": 1.72, "EV_Estimado": "+13.3%", "xG_Projetado": "3.10 gols", "Recomendacao": "Forte Assimetria no Over"},
@@ -513,7 +524,6 @@ elif st.session_state.modulo_atual == "Backtest 5 Anos":
         mapa_ligas = {"Premier League (Inglaterra)": "E0", "La Liga (Espanha)": "SP1", "Serie A (Itália)": "I1", "Bundesliga (Alemanha)": "D1"}
         temporadas = [{"nome": "2019/2020", "cod": "1920"}, {"nome": "2020/2021", "cod": "2021"}, {"nome": "2021/2022", "cod": "2122"}, {"nome": "2022/2023", "cod": "2223"}, {"nome": "2023/2024", "cod": "2324"}]
 
-        # BOTÃO DO BACKTEST COM FONTE BRANCA E CONTRASTE MÁXIMO
         if st.button("EXECUTAR SIMULAÇÃO HISTÓRICA DE 5 ANOS"):
             barra = st.progress(0)
             dfs = []
@@ -571,10 +581,10 @@ elif st.session_state.modulo_atual == "Backtest 5 Anos":
                     st.download_button("Baixar Auditoria Completa (.CSV / Excel)", data=csv_b, file_name=f"audit_5anos_{cod}.csv", mime="text/csv")
 
 # =========================================================================
-# MÓDULO 4: AGENDA (PRÓXIMOS JOGOS DE HOJE)
+# MÓDULO 4: GRADE DE JOGOS (AGENDA DO DIA)
 # =========================================================================
-elif st.session_state.modulo_atual == "Master List":
-    st.markdown("<h3 style='color:#ffffff; font-size:1.35rem; font-weight:900;'>Master List: Agenda de Partidas</h3>", unsafe_allow_html=True)
+elif st.session_state.modulo_atual == "Grade de Jogos":
+    st.markdown("<h3 style='color:#ffffff; font-size:1.35rem; font-weight:900;'>Grade de Jogos: Agenda de Partidas</h3>", unsafe_allow_html=True)
     if api_key:
         hoje = datetime.date.today().strftime("%Y-%m-%d")
         if st.button("SINCRONIZAR GRADE COMPLETA DO DIA"):
@@ -588,10 +598,10 @@ elif st.session_state.modulo_atual == "Master List":
                 """, unsafe_allow_html=True)
 
 # =========================================================================
-# MÓDULO 5: CALCULADORA DE VALOR (+EV) & CRITÉRIO DE KELLY
+# MÓDULO 5: CALCULADORA EV+ & CRITÉRIO DE KELLY
 # =========================================================================
-elif st.session_state.modulo_atual == "Calculadora +EV":
-    st.markdown("<h3 style='color:#ffffff; font-size:1.35rem; font-weight:900;'>Precificação Precisa & Gestão de Risco</h3>", unsafe_allow_html=True)
+elif st.session_state.modulo_atual == "Calculadora EV+":
+    st.markdown("<h3 style='color:#ffffff; font-size:1.35rem; font-weight:900;'>Calculadora EV+ (Precificação & Gestão de Risco)</h3>", unsafe_allow_html=True)
     c1, c2 = st.columns(2)
     with c1:
         odd = st.number_input("Odd Oferecida no Mercado", min_value=1.01, value=2.00, step=0.05)

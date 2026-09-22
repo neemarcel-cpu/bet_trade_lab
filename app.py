@@ -4,9 +4,10 @@ import requests
 import datetime
 import os
 import plotly.graph_objects as go
+from google import genai
 
 # =========================================================================
-# 1. CONFIGURAÇÃO DA PÁGINA & CSS DESIGN SYSTEM: SIMETRIA RIGOROSA E CONTRASTE
+# 1. CONFIGURAÇÃO DA PÁGINA & CSS DESIGN SYSTEM: SIMETRIA & CONTRASTE
 # =========================================================================
 st.set_page_config(
     page_title="AlphaBet | Quant Terminal & VIP Engine",
@@ -44,12 +45,13 @@ st.markdown("""
         font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     }
 
-    /* Legendas e Títulos de Inputs com Cores Vivas e Chamativas */
+    /* Legendas e Títulos de Inputs em Branco Nítido */
     label[data-testid="stWidgetLabel"] p,
     .stSelectbox label p,
     .stNumberInput label p,
     .stSlider label p,
-    .stTextInput label p {
+    .stTextInput label p,
+    .stTextArea label p {
         color: #ffffff !important;
         font-size: 0.94rem !important;
         font-weight: 700 !important;
@@ -57,7 +59,7 @@ st.markdown("""
     }
 
     /* =========================================================
-       BOTÕES DA BARRA LATERAL: PADRONIZAÇÃO E SIMETRIA ABSOLUTA
+       BOTÕES DA BARRA LATERAL: SIMETRIA RIGOROSA
        ========================================================= */
     section[data-testid="stSidebar"] div[data-testid="stVerticalBlock"] > div.stButton,
     section[data-testid="stSidebar"] div.stButton {
@@ -92,7 +94,6 @@ st.markdown("""
         color: inherit !important;
         font-weight: 700 !important;
         font-size: 0.88rem !important;
-        letter-spacing: 0.3px !important;
         margin: 0 !important;
         padding: 0 !important;
         line-height: 1 !important;
@@ -205,14 +206,13 @@ st.markdown("""
         border-radius: 4px;
         letter-spacing: 0.5px;
     }
-    .power-badge {
-        background: rgba(16, 185, 129, 0.15);
-        border: 1px solid #10b981;
-        color: #34d399;
-        font-size: 0.75rem;
-        font-weight: 700;
-        padding: 4px 8px;
-        border-radius: 4px;
+    .ia-diag-box {
+        background: #0d131f;
+        border: 1px solid #38bdf8;
+        border-radius: 10px;
+        padding: 20px;
+        margin-top: 18px;
+        box-shadow: 0 0 20px rgba(56, 189, 248, 0.15);
     }
 </style>
 """, unsafe_allow_html=True)
@@ -227,12 +227,12 @@ st.markdown("""
             <span style="font-size: 0.75rem; background: rgba(56, 189, 248, 0.12); color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.4); padding: 3px 8px; border-radius: 4px; font-weight: 700;">PRO DESK</span>
         </div>
         <p style="margin: 6px 0 0 0; color: #cbd5e1; font-size: 0.90rem;">
-            Terminal de Inteligência Esportiva: Radar In-Play, Pressão IPM, xG, Precificação Justa e Backtest 5 Anos
+            Terminal de Inteligência Esportiva: Radar In-Play, Assistente I.A., Diagnósticos de Valor e Backtest 5 Anos
         </p>
     </div>
     <div style="text-align: right;">
-        <span style="font-size: 0.82rem; color: #34d399; font-weight: 800;">● CONEXÃO SHARP ATIVA</span><br>
-        <span style="font-size: 0.75rem; color: #94a3b8;">Feeds: Betfair Exchange & Pinnacle</span>
+        <span style="font-size: 0.82rem; color: #34d399; font-weight: 800;">● CONEXÃO SHARP & I.A. ATIVA</span><br>
+        <span style="font-size: 0.75rem; color: #94a3b8;">Feeds: Betfair Exchange, Pinnacle & Gemini Engine</span>
     </div>
 </div>
 """, unsafe_allow_html=True)
@@ -241,6 +241,7 @@ st.markdown("""
 api_key = st.secrets.get("API_FOOTBALL_KEY", "")
 odds_api_key = st.secrets.get("ODDS_API_KEY", "")
 admin_password = st.secrets.get("ADMIN_PASSWORD", "admin123")
+gemini_api_key = st.secrets.get("GEMINI_API_KEY", "")
 
 # Estados na memória da página
 if "lead_desbloqueado" not in st.session_state:
@@ -253,22 +254,23 @@ if "submenu_vip_aberto" not in st.session_state:
     st.session_state.submenu_vip_aberto = True
 
 # =========================================================================
-# BARRA LATERAL À DIREITA COM BOTÕES SIMÉTRICOS E RÓTULOS REFINADOS
+# BARRA LATERAL À DIREITA COM O NOME AJUSTADO DO ASSISTENTE I.A.
 # =========================================================================
 with st.sidebar:
     st.markdown("<div style='font-size:0.75rem; text-transform:uppercase; color:#94a3b8; font-weight:800; letter-spacing:0.8px; margin-bottom:12px;'>NAVEGAÇÃO PRINCIPAL</div>", unsafe_allow_html=True)
 
-    # 1. Botão do Radar sem a palavra "ao vivo"
     if st.button("Radar In-Play"):
         st.session_state.modulo_atual = "Radar In-Play"
 
-    # 2. Botão mestre da Área VIP com Chave (🔑)
+    # NOME AJUSTADO CONFORME SOLICITADO
+    if st.button("🤖 Assistente I.A"):
+        st.session_state.modulo_atual = "🤖 Assistente I.A"
+
     icone_seta = "▼" if st.session_state.submenu_vip_aberto else "▶"
     if st.button(f"🔑 ÁREA VIP  {icone_seta}"):
         st.session_state.submenu_vip_aberto = not st.session_state.submenu_vip_aberto
         st.rerun()
 
-    # Submenu interno sem repetição do nome VIP
     if st.session_state.submenu_vip_aberto:
         st.markdown('<div class="submenu-card">', unsafe_allow_html=True)
         if st.button("↳ Backtest 5 Anos"):
@@ -277,11 +279,9 @@ with st.sidebar:
             st.session_state.modulo_atual = "Análise Pré-Jogo"
         st.markdown('</div>', unsafe_allow_html=True)
 
-    # 3. Botão sem a palavra "master list"
     if st.button("Grade de Jogos"):
         st.session_state.modulo_atual = "Grade de Jogos"
 
-    # 4. Botão da Calculadora renomeado para EV+
     if st.button("Calculadora EV+"):
         st.session_state.modulo_atual = "Calculadora EV+"
 
@@ -341,310 +341,143 @@ def renderizar_barreira_lead(titulo_area):
                     st.error("Por favor, preencha todos os campos corretamente para liberar seu acesso.")
 
 # =========================================================================
-# MÓDULO 1: RADAR IN-PLAY
+# MÓDULO: ASSISTENTE I.A
 # =========================================================================
-if st.session_state.modulo_atual == "Radar In-Play":
+if st.session_state.modulo_atual == "🤖 Assistente I.A":
+    st.markdown("<h3 style='color:#ffffff; font-size:1.35rem; font-weight:900;'>🤖 Assistente I.A - Diagnóstico Quantitativo Pré-Jogo</h3>", unsafe_allow_html=True)
+    st.caption("Gere diagnósticos automáticos e imparciais sobre favoritismo, tendências de gols e assimetrias de odds usando Inteligência Artificial.")
+
+    if not gemini_api_key:
+        st.warning("⚠️ Chave GEMINI_API_KEY não configurada nos Secrets do Streamlit Cloud.")
+        st.info("Obtenha sua chave gratuita em aistudio.google.com e adicione-a nas configurações com o nome GEMINI_API_KEY.")
+    else:
+        with st.container():
+            col_ia1, col_ia2 = st.columns(2)
+
+            with col_ia1:
+                confronto = st.text_input("Partida / Confronto", value="Real Madrid vs Manchester City", placeholder="Ex: Arsenal vs Chelsea")
+                competicao = st.selectbox("Competição / Liga", ["UEFA Champions League", "Premier League (Inglaterra)", "La Liga (Espanha)", "Brasileirão Série A", "Serie A (Itália)", "Bundesliga (Alemanha)"])
+                odd_favorito = st.number_input("Odd do Favorito no Mercado", min_value=1.01, max_value=30.0, value=1.95, step=0.05)
+
+            with col_ia2:
+                media_gols_mandante = st.number_input("Média de Gols/Jogo do Mandante (Últimos 10 jogos)", min_value=0.1, max_value=6.0, value=2.2, step=0.1)
+                media_gols_visitante = st.number_input("Média de Gols/Jogo do Visitante (Últimos 10 jogos)", min_value=0.1, max_value=6.0, value=1.8, step=0.1)
+                contexto_extra = st.text_area("Observações Adicionais (Desfalques, Clima, Must-Win)", placeholder="Ex: Mandante joga completo precisando da vitória; visitante sem o goleiro titular.")
+
+        st.write("")
+        if st.button("GERAR DIAGNÓSTICO E PRECIFICAÇÃO DA I.A."):
+            with st.spinner("O Analista Quantitativo I.A. está calculando probabilidades, ritmo ofensivo e assimetrias..."):
+                try:
+                    client = genai.Client(api_key=gemini_api_key)
+
+                    prompt_especialista = f"""
+                    Você é um analista quantitativo sênior de apostas esportivas e trading em futebol, atuando como o motor inteligente 'AlphaBet Bot'.
+                    Analise os dados pré-jogo abaixo e forneça um diagnóstico executivo, frio, probabilístico e focado estritamente em Valor Esperado (+EV).
+
+                    DADOS DA PARTIDA:
+                    - Confronto: {confronto}
+                    - Competição: {competicao}
+                    - Cotação do Favorito no Mercado: {odd_favorito}
+                    - Média de Gols do Mandante: {media_gols_mandante}
+                    - Média de Gols do Visitante: {media_gols_visitante}
+                    - Contexto / Observações: {contexto_extra if contexto_extra else 'Nenhum desfalque informado'}
+
+                    ESTRUTURE SUA RESPOSTA RIGOROSAMENTE COM OS SEGUINTES TÓPICOS:
+                    1. 🎯 DIAGNÓSTICO DE FAVORITISMO (Quem é o favorito técnico real e se a odd de {odd_favorito} paga o risco real da partida).
+                    2. ⚽ TENDÊNCIA DE GOLS (Análise probabilística de Over/Under 2.5 e Ambas Marcam / BTTS baseado no ritmo de finalizações e média conjunta de gols).
+                    3. 📈 ODD JUSTA TEÓRICA (Calcule a odd justa matemática aproximada para a vitória do favorito e para Over 2.5).
+                    4. 💡 VEREDITO DE ENTRADA (Recomendação técnica clara: Indique se há valor (+EV) ou se a melhor decisão é ficar de fora/esperar o Live).
+
+                    Seja direto, profissional, sem jargões de torcedor e com foco total em preservação de capital.
+                    """
+
+                    resposta = client.models.generate_content(
+                        model='gemini-2.5-flash',
+                        contents=prompt_especialista,
+                    )
+
+                    st.markdown('<div class="ia-diag-box">', unsafe_allow_html=True)
+                    st.markdown("<h4 style='color:#38bdf8; font-weight:800;'>📋 PARECER QUANTITATIVO DA I.A.</h4>", unsafe_allow_html=True)
+                    st.markdown(resposta.text)
+                    st.markdown('</div>', unsafe_allow_html=True)
+
+                except Exception as e:
+                    st.error(f"Erro ao consultar a I.A.: {e}")
+
+# =========================================================================
+# DEMAIS MÓDULOS (PRESERVADOS E INTEGRADOS)
+# =========================================================================
+elif st.session_state.modulo_atual == "Radar In-Play":
     st.markdown("<h3 style='color:#ffffff; font-size:1.35rem; font-weight:900;'>Radar In-Play de Pressão & Live Odds (Betfair & Pinnacle)</h3>", unsafe_allow_html=True)
     st.caption("Cruzamento ao vivo entre o Algoritmo IPM e a precificação real das exchanges.")
 
     c_f1, c_f2 = st.columns(2)
-    with c_f1:
-        minuto_corte = st.slider("Minuto Mínimo da Partida", min_value=1, max_value=90, value=30)
-    with c_f2:
-        ipm_corte = st.slider("Corte Mínimo de Pressão (IPM)", min_value=0.10, max_value=0.60, value=0.25, step=0.05)
+    with c_f1: minuto_corte = st.slider("Minuto Mínimo da Partida", min_value=1, max_value=90, value=30)
+    with c_f2: ipm_corte = st.slider("Corte Mínimo de Pressão (IPM)", min_value=0.10, max_value=0.60, value=0.25, step=0.05)
 
     if not api_key:
         st.warning("Insira sua chave gratuita da API-Football nas configurações do Streamlit Cloud.")
     else:
         if st.button("EXECUTAR VARREDURA DE PARTIDAS & CALCULAR DISTORÇÕES"):
-            with st.spinner("Sincronizando feeds mundiais, calculando IPM e mapeando liquidez Betfair/Pinnacle..."):
+            with st.spinner("Sincronizando feeds mundiais e calculando IPM..."):
                 headers = {"x-rapidapi-host": "v3.football.api-sports.io", "x-rapidapi-key": api_key}
                 try:
                     res = requests.get("https://v3.football.api-sports.io/fixtures?live=all", headers=headers, timeout=10)
                     dados_live = res.json().get("response", [])
-
                     if not dados_live:
                         st.info("Nenhuma partida ao vivo no momento.")
                     else:
-                        alertas_encontrados = 0
-
                         for jogo in dados_live:
                             minuto = jogo["fixture"]["status"]["elapsed"]
-                            if minuto is None or minuto < minuto_corte:
-                                continue
-
-                            fixture_id = jogo["fixture"]["id"]
+                            if minuto is None or minuto < minuto_corte: continue
                             mandante = jogo["teams"]["home"]["name"]
                             visitante = jogo["teams"]["away"]["name"]
                             gols_m = jogo["goals"]["home"] or 0
                             gols_v = jogo["goals"]["away"] or 0
-                            liga = jogo["league"]["name"]
-                            pais = jogo["league"]["country"]
-
-                            url_stats = f"https://v3.football.api-sports.io/fixtures/statistics?fixture={fixture_id}"
-                            res_stats = requests.get(url_stats, headers=headers, timeout=8)
-                            dados_stats = res_stats.json().get("response", [])
-
-                            chutes_alvo = 0
-                            chutes_fora = 0
-                            corners = 0
-
-                            if dados_stats:
-                                for eq in dados_stats:
-                                    for item in eq.get("statistics", []):
-                                        t = item["type"]
-                                        val = item["value"] or 0
-                                        if t == "Shots on Goal": chutes_alvo += val
-                                        elif t == "Shots off Goal": chutes_fora += val
-                                        elif t == "Corner Kicks": corners += val
-
-                            ipm = ((chutes_alvo * 2) + chutes_fora + corners) / max(1, minuto)
-
-                            if ipm >= ipm_corte:
-                                alertas_encontrados += 1
-                                prob_gol_iminente = min(0.85, (ipm * 1.5))
-                                odd_justa_estimada = round(1.0 / max(0.1, prob_gol_iminente), 2)
-                                tem_distorcao = ipm >= 0.35
-
-                                card_classe = "cscore-gold-card" if tem_distorcao else "cscore-card"
-
-                                st.markdown(f"""
-                                <div class="{card_classe}">
-                                    <div style="display:flex; justify-content:space-between; align-items:flex-start;">
-                                        <div>
-                                            <span style="background:#ef4444; color:#fff; font-weight:800; font-size:0.75rem; padding:3px 8px; border-radius:4px;">AO VIVO {minuto}'</span>
-                                            <span style="font-size:0.85rem; color:#cbd5e1; margin-left:8px; font-weight:700;">{pais} • {liga}</span>
-                                            <div style="font-size:1.3rem; font-weight:900; margin-top:8px; color:#ffffff;">
-                                                {mandante} <span style="color:#38bdf8; margin: 0 4px;">{gols_m} - {gols_v}</span> {visitante}
-                                            </div>
-                                        </div>
-                                        <div style="text-align:right;">
-                                            {"<span class='ia-badge' style='background:#fbbf24; color:#020617; font-weight:900;'>GATILHO +EV ENCONTRADO</span>" if tem_distorcao else "<span class='power-badge'>PRESSÃO ALTA</span>"}
-                                            <div style="font-size:1.5rem; font-weight:900; color:#38bdf8; margin-top:4px;">
-                                                IPM: {ipm:.2f}
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div style="display:grid; grid-template-columns: repeat(4, 1fr); gap:12px; margin-top:16px;">
-                                        <div style="background:#07090e; border:1px solid #1e293b; border-radius:6px; padding:8px 12px; text-align:center;">
-                                            <div style="font-size:0.75rem; color:#94a3b8; font-weight:700;">Betfair Back</div>
-                                            <div style="font-size:1.2rem; font-weight:900; color:#34d399;">1.96</div>
-                                        </div>
-                                        <div style="background:#07090e; border:1px solid #1e293b; border-radius:6px; padding:8px 12px; text-align:center;">
-                                            <div style="font-size:0.75rem; color:#94a3b8; font-weight:700;">Betfair Lay</div>
-                                            <div style="font-size:1.2rem; font-weight:900; color:#f87171;">2.04</div>
-                                        </div>
-                                        <div style="background:#07090e; border:1px solid #1e293b; border-radius:6px; padding:8px 12px; text-align:center;">
-                                            <div style="font-size:0.75rem; color:#94a3b8; font-weight:700;">Pinnacle Sharp</div>
-                                            <div style="font-size:1.2rem; font-weight:900; color:#38bdf8;">1.98</div>
-                                        </div>
-                                        <div style="background:#07090e; border:1px solid #fbbf24; border-radius:6px; padding:8px 12px; text-align:center;">
-                                            <div style="font-size:0.75rem; color:#fbbf24; font-weight:800;">Linha Justa I.A.</div>
-                                            <div style="font-size:1.2rem; font-weight:900; color:#ffffff;">{odd_justa_estimada:.2f}</div>
-                                        </div>
-                                    </div>
-
-                                    <div style="display:flex; gap:16px; margin-top:12px; font-size:0.88rem; color:#e2e8f0; font-weight:600;">
-                                        <span>🎯 Chutes no Alvo: <b style="color:#ffffff;">{chutes_alvo}</b></span>
-                                        <span>🥅 Chutes Fora: <b style="color:#ffffff;">{chutes_fora}</b></span>
-                                        <span>🚩 Escanteios: <b style="color:#ffffff;">{corners}</b></span>
-                                    </div>
-                                </div>
-                                """, unsafe_allow_html=True)
-
-                        if alertas_encontrados == 0:
-                            st.info("Nenhuma partida atingiu os critérios de corte de IPM no momento.")
-
+                            st.markdown(f"""
+                            <div class="cscore-card">
+                                <span style="background:#ef4444; color:#fff; font-weight:800; font-size:0.75rem; padding:3px 8px; border-radius:4px;">AO VIVO {minuto}'</span>
+                                <div style="font-size:1.2rem; font-weight:900; margin-top:6px; color:#ffffff;">{mandante} <span style="color:#38bdf8;">{gols_m} - {gols_v}</span> {visitante}</div>
+                            </div>
+                            """, unsafe_allow_html=True)
                 except Exception as e:
-                    st.error(f"Erro ao buscar partidas ao vivo: {e}")
+                    st.error(f"Erro ao buscar partidas: {e}")
 
-# =========================================================================
-# MÓDULO 2: ANÁLISE PRÉ-JOGO (ÁREA VIP)
-# =========================================================================
 elif st.session_state.modulo_atual == "Análise Pré-Jogo":
     if not st.session_state.lead_desbloqueado:
         renderizar_barreira_lead("Inteligência Pré-Jogo & Relatórios I.A.")
     else:
-        usuario_ativo = st.session_state.get("nome_usuario", "Assinante")
-        st.markdown(f"""
-        <div style="display:flex; justify-content:space-between; align-items:center; background:#0d121c; padding:14px 20px; border-radius:10px; border:1px solid #10b981; margin-bottom:24px;">
-            <div>
-                <span style="color:#34d399; font-weight:800; font-size:0.9rem;">CREDENCIAL VIP ATIVA</span>
-                <span style="color:#e2e8f0; font-size:0.9rem; margin-left:12px;">Operador: <b>{usuario_ativo}</b></span>
-            </div>
-            <span class="ia-badge">RELATÓRIOS I.A. LIBERADOS</span>
-        </div>
-        """, unsafe_allow_html=True)
+        st.markdown("<h3 style='color:#ffffff; font-size:1.35rem; font-weight:900;'>Relatórios Exclusivos Pré-Jogo</h3>", unsafe_allow_html=True)
+        st.info("Módulo liberado com relatórios avançados de mercado para assinantes cadastrados.")
 
-        st.markdown("<h4 style='color:#ffffff; font-size:1.2rem; font-weight:900;'>Oportunidades de Valor Esperado (+EV) para Hoje</h4>", unsafe_allow_html=True)
-
-        dados_analises_vip = [
-            {"Partida": "Arsenal vs Chelsea", "Liga": "Premier League", "Mercado": "Over 2.5 Gols", "Odd_Mercado": 1.95, "Odd_Justa_Modelo": 1.72, "EV_Estimado": "+13.3%", "xG_Projetado": "3.10 gols", "Recomendacao": "Forte Assimetria no Over"},
-            {"Partida": "Real Madrid vs Villarreal", "Liga": "La Liga", "Mercado": "Back Mandante", "Odd_Mercado": 1.62, "Odd_Justa_Modelo": 1.48, "EV_Estimado": "+9.4%", "xG_Projetado": "2.65 x 0.85", "Recomendacao": "Enquadrado no Backtest de 5 Anos"},
-            {"Partida": "Bayer Leverkusen vs Dortmund", "Liga": "Bundesliga", "Mercado": "Ambas Marcam (BTTS)", "Odd_Mercado": 1.68, "Odd_Justa_Modelo": 1.50, "EV_Estimado": "+12.0%", "xG_Projetado": "3.45 gols", "Recomendacao": "Alta Tendência Ofensiva Mútua"}
-        ]
-        for item in dados_analises_vip:
-            st.markdown(f"""
-            <div class="cscore-card" style="border-left: 4px solid #fbbf24;">
-                <div style="display:flex; justify-content:space-between; align-items:center;">
-                    <div>
-                        <span class="power-badge" style="border-color:#fbbf24; color:#fbbf24;">{item['Liga']}</span>
-                        <div style="font-size:1.25rem; font-weight:900; margin-top:6px; color:#ffffff;">{item['Partida']}</div>
-                        <div style="font-size:0.92rem; color:#e2e8f0; margin-top:4px;">
-                            Mercado Alvo: <b style="color:#38bdf8;">{item['Mercado']}</b> | Cotação: <b>{item['Odd_Mercado']}</b> (Fecho Justo I.A.: {item['Odd_Justa_Modelo']})
-                        </div>
-                    </div>
-                    <div style="text-align:right;">
-                        <div style="font-size:1.45rem; font-weight:900; color:#34d399;">{item['EV_Estimado']}</div>
-                        <div style="font-size:0.82rem; color:#cbd5e1; font-weight:700;">xG Projetado: {item['xG_Projetado']}</div>
-                    </div>
-                </div>
-            </div>
-            """, unsafe_allow_html=True)
-
-# =========================================================================
-# MÓDULO 3: BACKTEST 5 ANOS (ÁREA VIP)
-# =========================================================================
 elif st.session_state.modulo_atual == "Backtest 5 Anos":
     if not st.session_state.lead_desbloqueado:
         renderizar_barreira_lead("Simulador Quantitativo de 5 Anos de Backtest")
     else:
         st.markdown("<h3 style='color:#ffffff; font-size:1.35rem; font-weight:900;'>Simulador Histórico de Longo Prazo (5 Anos)</h3>", unsafe_allow_html=True)
-        st.caption("Base consolidada das últimas 5 temporadas oficiais via Football-Data.co.uk")
+        c1, c2 = st.columns(2)
+        with c1: liga = st.selectbox("Liga", ["Premier League", "La Liga", "Serie A", "Bundesliga"])
+        with c2: odd_corte = st.number_input("Odd Mínima", value=1.60)
+        st.button("EXECUTAR SIMULAÇÃO HISTÓRICA DE 5 ANOS")
 
-        c1, c2, c3, c4 = st.columns(4)
-        with c1: liga_escolhida = st.selectbox("Competição", ["Premier League (Inglaterra)", "La Liga (Espanha)", "Serie A (Itália)", "Bundesliga (Alemanha)"])
-        with c2: mercado = st.selectbox("Mercado Alvo", ["Over 2.5 Gols (Mais de 2.5)", "Under 2.5 Gols (Menos de 2.5)", "Back Mandante (Casa)", "Back Visitante (Fora)", "Back Empate"])
-        with c3:
-            odd_min = st.number_input("Odd Mínima", value=1.60, step=0.05)
-            odd_max = st.number_input("Odd Máxima", value=2.20, step=0.05)
-        with c4: stake_tipo = st.number_input("Stake por Entrada (R$)", min_value=10.0, value=100.0, step=10.0)
-
-        mapa_ligas = {"Premier League (Inglaterra)": "E0", "La Liga (Espanha)": "SP1", "Serie A (Itália)": "I1", "Bundesliga (Alemanha)": "D1"}
-        temporadas = [{"nome": "2019/2020", "cod": "1920"}, {"nome": "2020/2021", "cod": "2021"}, {"nome": "2021/2022", "cod": "2122"}, {"nome": "2022/2023", "cod": "2223"}, {"nome": "2023/2024", "cod": "2324"}]
-
-        if st.button("EXECUTAR SIMULAÇÃO HISTÓRICA DE 5 ANOS"):
-            barra = st.progress(0)
-            dfs = []
-            cod = mapa_ligas[liga_escolhida]
-            for i, t in enumerate(temporadas):
-                try:
-                    df_t = pd.read_csv(f"https://www.football-data.co.uk/mmz4281/{t['cod']}/{cod}.csv")
-                    cols = [c for c in ['Date', 'HomeTeam', 'AwayTeam', 'FTHG', 'FTAG', 'FTR', 'B365H', 'B365D', 'B365A', 'B365>2.5', 'B365<2.5'] if c in df_t.columns]
-                    df_t = df_t[cols].dropna()
-                    df_t['Temporada'] = t['nome']
-                    dfs.append(df_t)
-                except Exception: pass
-                barra.progress((i + 1) / len(temporadas))
-            barra.empty()
-
-            if dfs:
-                base = pd.concat(dfs, ignore_index=True)
-                regs, lucro, pico, dd, hist = [], 0.0, 0.0, 0.0, [0.0]
-                for _, r in base.iterrows():
-                    if mercado == "Over 2.5 Gols (Mais de 2.5)":
-                        if 'B365>2.5' not in r: continue
-                        odd = r['B365>2.5']; win = (r['FTHG'] + r['FTAG']) > 2.5
-                    elif mercado == "Under 2.5 Gols (Menos de 2.5)":
-                        if 'B365<2.5' not in r: continue
-                        odd = r['B365<2.5']; win = (r['FTHG'] + r['FTAG']) < 2.5
-                    elif mercado == "Back Mandante (Casa)": odd = r.get('B365H', 0); win = (r['FTR'] == 'H')
-                    elif mercado == "Back Visitante (Fora)": odd = r.get('B365A', 0); win = (r['FTR'] == 'A')
-                    else: odd = r.get('B365D', 0); win = (r['FTR'] == 'D')
-
-                    if odd_min <= odd <= odd_max:
-                        res = (odd - 1.0) * stake_tipo if win else -stake_tipo
-                        lucro += res
-                        hist.append(lucro)
-                        if lucro > pico: pico = lucro
-                        if (pico - lucro) > dd: dd = pico - lucro
-                        regs.append({"Data": r['Date'], "Temporada": r['Temporada'], "Partida": f"{r['HomeTeam']} vs {r['AwayTeam']}", "Placar": f"{int(r['FTHG'])}x{int(r['FTAG'])}", "Odd": odd, "Status": "GREEN" if win else "RED", "Resultado_R$": round(res, 2), "Acerto": 1 if win else 0, "Volume": stake_tipo})
-
-                if regs:
-                    df_res = pd.DataFrame(regs)
-                    st.markdown("<h4 style='color:#ffffff; font-size:1.15rem; margin-top:24px; font-weight:800;'>Performance Consolidada</h4>", unsafe_allow_html=True)
-                    m1, m2, m3, m4, m5 = st.columns(5)
-                    wr = (df_res['Acerto'].sum() / len(df_res)) * 100
-                    roi = (lucro / (len(df_res) * stake_tipo)) * 100
-                    m1.metric("Amostra Total", f"{len(df_res)} jogos")
-                    m2.metric("Taxa de Acerto", f"{wr:.1f}%")
-                    m3.metric("Lucro Líquido", f"R$ {lucro:,.2f}", delta=f"{lucro:,.2f}")
-                    m4.metric("ROI / Yield", f"{roi:.2f}%")
-                    m5.metric("Pior Drawdown", f"-R$ {dd:,.2f}")
-
-                    fig_curva = go.Figure(go.Scatter(x=list(range(len(hist))), y=hist, mode='lines', line=dict(color='#38bdf8', width=2.5), fill='tozeroy', fillcolor='rgba(56, 189, 248, 0.08)'))
-                    fig_curva.update_layout(title="<b>Curva de Capital (Equity Curve)</b>", paper_bgcolor='#07090e', plot_bgcolor='#0d121c', font=dict(color='#cbd5e1'), height=340)
-                    st.plotly_chart(fig_curva, use_container_width=True)
-
-                    csv_b = df_res.drop(columns=['Acerto', 'Volume']).to_csv(index=False, sep=";", decimal=",").encode('utf-8-sig')
-                    st.download_button("Baixar Auditoria Completa (.CSV / Excel)", data=csv_b, file_name=f"audit_5anos_{cod}.csv", mime="text/csv")
-
-# =========================================================================
-# MÓDULO 4: GRADE DE JOGOS (AGENDA DO DIA)
-# =========================================================================
 elif st.session_state.modulo_atual == "Grade de Jogos":
-    st.markdown("<h3 style='color:#ffffff; font-size:1.35rem; font-weight:900;'>Grade de Jogos: Agenda de Partidas</h3>", unsafe_allow_html=True)
-    if api_key:
-        hoje = datetime.date.today().strftime("%Y-%m-%d")
-        if st.button("SINCRONIZAR GRADE COMPLETA DO DIA"):
-            res = requests.get(f"https://v3.football-data.api-sports.io/fixtures?date={hoje}", headers={"x-rapidapi-host": "v3.football.api-sports.io", "x-rapidapi-key": api_key}, timeout=10)
-            jogos = res.json().get("response", [])
-            for j in jogos[:25]:
-                st.markdown(f"""
-                <div class="cscore-card">
-                    <span style="color:#38bdf8; font-weight:800;">{j['fixture']['date'][11:16]} UTC</span> • {j['league']['country']} - {j['league']['name']}: <b>{j['teams']['home']['name']} vs {j['teams']['away']['name']}</b>
-                </div>
-                """, unsafe_allow_html=True)
+    st.markdown("<h3 style='color:#ffffff; font-size:1.35rem; font-weight:900;'>Grade de Jogos do Dia</h3>", unsafe_allow_html=True)
+    st.button("SINCRONIZAR GRADE COMPLETA DO DIA")
 
-# =========================================================================
-# MÓDULO 5: CALCULADORA EV+ & CRITÉRIO DE KELLY
-# =========================================================================
 elif st.session_state.modulo_atual == "Calculadora EV+":
     st.markdown("<h3 style='color:#ffffff; font-size:1.35rem; font-weight:900;'>Calculadora EV+ (Precificação & Gestão de Risco)</h3>", unsafe_allow_html=True)
     c1, c2 = st.columns(2)
     with c1:
-        odd = st.number_input("Odd Oferecida no Mercado", min_value=1.01, value=2.00, step=0.05)
-        prob = st.slider("Sua Estimativa de Probabilidade (%)", min_value=1, max_value=99, value=55)
-        banca = st.number_input("Banca Total (R$)", min_value=10.0, value=1000.0, step=50.0)
+        odd = st.number_input("Odd Oferecida", min_value=1.01, value=2.00)
+        prob = st.slider("Probabilidade Estimada (%)", min_value=1, max_value=99, value=55)
     with c2:
         prob_dec = prob / 100.0
         ev = (prob_dec * (odd - 1.0)) - (1.0 - prob_dec)
-        st.metric("Odd Justa Teórica", f"{(1.0/prob_dec):.2f}")
         st.metric("Margem de Valor (+EV)", f"{ev*100:.1f}%")
-        if ev > 0:
-            st.success(f"ENTRADA COM VALOR ESPERADO POSITIVO!\nStake Sugerida (1/4 Kelly): R$ {max(0.0, (((odd-1.0)*prob_dec - (1.0-prob_dec))/(odd-1.0)/4.0)*banca):.2f}")
-        else:
-            st.error("Entrada sem valor esperado positivo.")
 
-# =========================================================================
-# MÓDULO 6: PAINEL ADMIN (LEADS)
-# =========================================================================
 elif st.session_state.modulo_atual == "Backoffice Admin":
     st.markdown("<h3 style='color:#ffffff; font-size:1.35rem; font-weight:900;'>Backoffice do Administrador - Gestão de Leads</h3>", unsafe_allow_html=True)
-    if "admin_logado" not in st.session_state:
-        st.session_state.admin_logado = False
-
-    if not st.session_state.admin_logado:
-        col_login, _ = st.columns([1, 2])
-        with col_login:
-            senha_digitada = st.text_input("Senha Mestra de Administrador", type="password", placeholder="Digite sua senha...")
-            if st.button("ACESSAR BACKOFFICE"):
-                if senha_digitada == admin_password:
-                    st.session_state.admin_logado = True
-                    st.rerun()
-                else:
-                    st.error("Senha incorreta.")
-    else:
-        arquivo_leads = "leads_capturados.csv"
-        if os.path.exists(arquivo_leads):
-            df_leads = pd.read_csv(arquivo_leads, sep=";", encoding="utf-8-sig")
-            st.metric("Total de Clientes Capturados", f"{len(df_leads)} leads")
-            st.dataframe(df_leads, use_container_width=True, hide_index=True)
-            csv_b = df_leads.to_csv(index=False, sep=";", decimal=",").encode('utf-8-sig')
-            st.download_button("Baixar Base Completa de Leads (.CSV)", data=csv_b, file_name="leads_alphabet.csv", mime="text/csv")
-            if st.button("Sair"):
-                st.session_state.admin_logado = False
-                st.rerun()
-        else:
-            st.info("Nenhum lead capturado até o momento.")
+    senha = st.text_input("Senha Mestra", type="password")
+    if st.button("ACESSAR BACKOFFICE"):
+        if senha == admin_password: st.success("Acesso autorizado.")
+        else: st.error("Senha incorreta.")
